@@ -1,0 +1,169 @@
+/*
+ * The MIT License (MIT)
+ *
+ * Copyright (c) 2019 Ha Thach (tinyusb.org)
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ *
+ */
+
+/* Example to show how to navigate mass storage device with built-in command line.
+ * Type help for list of supported commands and syntax (mostly linux commands)
+
+ > help
+ * help
+        Print list of commands
+ * cat
+        Usage: cat [FILE]...
+        Concatenate FILE(s) to standard output..
+ * cd
+        Usage: cd [DIR]...
+        Change the current directory to DIR.
+ * cp
+        Usage: cp SOURCE DEST
+        Copy SOURCE to DEST.
+ * ls
+        Usage: ls [DIR]...
+        List information about the FILEs (the current directory by default).
+ * pwd
+        Usage: pwd
+        Print the name of the current working directory.
+ * mkdir
+        Usage: mkdir DIR...
+        Create the DIRECTORY(ies), if they do not already exist..
+ * mv
+        Usage: mv SOURCE DEST...
+        Rename SOURCE to DEST.
+ * rm
+        Usage: rm [FILE]...
+        Remove (unlink) the FILE(s).
+ */
+
+#include <stdio.h>
+#include <stdbool.h>
+#include "bsp/board_api.h"
+#include "tusb.h"
+
+#include "msc_app.h"
+#include "file_processing.h"
+#include "hardware_processing.h"
+#include "pico/stdlib.h"
+
+#define FALSE 0
+#define TRUE  1
+
+//--------------------------------------------------------------------+
+// MACRO CONSTANT TYPEDEF PROTYPES
+//--------------------------------------------------------------------+
+void led_blinking_task(void);
+
+
+
+/*------------- MAIN -------------*/
+int main(void) {
+  volatile bool spi_transfer = FALSE;           // a flag to indicate if SPI transfer has happened(FALSE) or will happen (TRUE)
+  static char conversion[ NUMBER_OF_BYTES + 1 ];       // to convert to string.
+  static uint8_t in_buf[ BUF_LEN ];
+
+     
+  stdio_init_all();     
+  timer_hw->dbgpause = 0;
+  board_init();
+  set_spi_gpio_pins();
+  if( spi_transfer == FALSE ) // Also nonrentrant functions are done here
+  {
+       uint32_t status = save_and_disable_interrupts(); // this is so that the interrupts don't fire up over here when spi stuff is being set up
+       prepare_memory_for_spi_transfer( conversion, NUMBER_OF_BYTES, in_buf );
+       spi_irq_setup_init();
+       spi_transfer = TRUE;
+       restore_interrupts_from_disabled(status);
+  }
+
+//   bool spi_check = spi_irq_setup_init();
+
+//   if(spi_check == TRUE)
+//   {
+//       spi_transfer = TRUE;
+//   }
+  
+  printf("TinyUSB Host MassStorage Explorer Example\r\n");
+
+  // init host stack on configured roothub port
+  tusb_rhport_init_t host_init = {
+    .role = TUSB_ROLE_HOST,
+    .speed = TUSB_SPEED_AUTO
+  };
+  tusb_init(BOARD_TUH_RHPORT, &host_init);
+
+  if (board_init_after_tusb) {
+    board_init_after_tusb();
+  }
+
+  msc_app_init();
+  
+  while (1) {
+    // tinyusb host task
+    tuh_task();
+    msc_app_task();
+    led_blinking_task();
+    hardware_processing(in_buf, conversion);
+    file_processing_main();
+  }
+
+  return 0;
+}
+
+//--------------------------------------------------------------------+
+// TinyUSB Callbacks
+//--------------------------------------------------------------------+
+
+void tuh_mount_cb(uint8_t dev_addr) {
+  (void) dev_addr;
+}
+
+void tuh_umount_cb(uint8_t dev_addr) {
+  (void) dev_addr;
+}
+
+//--------------------------------------------------------------------+
+// Blinking Task
+//--------------------------------------------------------------------+
+void led_blinking_task(void) {
+  const uint32_t interval_ms = 1000;
+  static uint32_t start_ms = 0;
+
+  static bool led_state = false;
+
+  // Blink every interval ms
+  if (board_millis() - start_ms < interval_ms) return; // not enough time
+  start_ms += interval_ms;
+
+  board_led_write(led_state);
+  led_state = 1 - led_state; // toggle
+}
+
+// Simple delay implementation using Pico SDK (or your platform)
+void tusb_time_delay_ms_api(uint32_t ms) {
+    sleep_ms(ms);   // Pico SDK function
+}
+
+// HID report callback
+void tuh_hid_report_received_cb(uint8_t dev_addr, uint8_t instance, uint8_t const* report, uint16_t len) {
+    // Handle received HID report here
+}
