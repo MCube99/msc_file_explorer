@@ -18,11 +18,11 @@ target_sources(app_main
 )
 
 ## target_include_directories(${EXECUTABLE_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
-target_compile_definitions(app_main PRIVATE 
-PICO_DEFAULT_UART=0
-PICO_DEFAULT_UART_TX_PIN=0
-PICO_DEFAULT_UART_RX_PIN=1)
+##target_compile_definitions(app_main PUBLIC CFG_TUH_ENABLED=1)
 
-target_link_libraries(app_main PUBLIC file_processing PRIVATE hardware_sync)
+
+
+target_link_libraries(app_main PUBLIC file_processing)
+target_compile_definitions(app_main PUBLIC CFG_TUH_ENABLED=1 CFG_TUH_LOG=0)
 
 pico_add_extra_outputs(app_main)

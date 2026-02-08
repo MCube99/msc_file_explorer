@@ -4,18 +4,21 @@
             "name": "Pico",
             "includePath": [
                 "${workspaceFolder}/**",
-                "${userHome}/.pico-sdk/sdk/2.2.0/**"
+                "C:/Users/Mypc/.pico-sdk/sdk/2.2.0/**",
+                "C:/Users/Mypc/.pico-sdk/toolchain/14_2_Rel1/arm-none-eabi/include",
+                "C:/Users/Mypc/.pico-sdk/toolchain/14_2_Rel1/lib/gcc/arm-none-eabi/14.2.1/include",
+                "C:/Users/Mypc/.pico-sdk/toolchain/14_2_Rel1/lib/gcc/arm-none-eabi/14.2.1/include-fixed"
             ],
             "forcedInclude": [
-                "${userHome}/.pico-sdk/sdk/2.2.0/src/common/pico_base_headers/include/pico.h",
+                "C:/Users/Mypc/.pico-sdk/sdk/2.2.0/src/common/pico_base_headers/include/pico.h",
                 "${workspaceFolder}/build/generated/pico_base/pico/config_autogen.h"
             ],
             "defines": [],
-            "compilerPath": "${userHome}/.pico-sdk/toolchain/14_2_Rel1/bin/arm-none-eabi-gcc.exe",
+            "compilerPath": "C:/Users/Mypc/.pico-sdk/toolchain/14_2_Rel1/bin/arm-none-eabi-gcc.exe",
             "compileCommands": "${workspaceFolder}/build/compile_commands.json",
             "cStandard": "c17",
             "cppStandard": "c++14",
-            "intelliSenseMode": "linux-gcc-arm"
+            "intelliSenseMode": "gcc-arm"
         }
     ],
     "version": 4

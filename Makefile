@@ -25,3 +25,8 @@ SRC_C += \
 CFLAGS_GCC += -Wno-error=cast-qual
 
 include ../../build_system/make/rules.mk
+
+
+PHONY: clean 
+clean:
+  @rm -rf build

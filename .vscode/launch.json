@@ -60,7 +60,7 @@
             "request": "launch",
 
             "cwd": "${workspaceFolder}",
-            "executable": "${workspaceFolder}/build/app/app_main.elf",
+            "executable": "${command:cmake.launchTargetPath}",
 
             "servertype": "openocd",
             "device": "RP2040",
@@ -80,9 +80,9 @@
 
             "runToEntryPoint": "main",
 
-            "gdbPath": "C:/Users/mmadha/arm-gnu-toolchain-14.2.rel1-mingw-w64-i686-arm-none-eabi/bin/arm-none-eabi-gdb.exe",
+            "gdbPath": "C:/Program Files (x86)/GNU Arm Embedded Toolchain/10 2021.10/bin/arm-none-eabi-gdb.exe",
 
-            "svdFile": "H:/pico_sdk/src/rp2040/hardware_regs/rp2040.svd",
+            "svdFile": "C:/pico_sdk/src/rp2040/hardware_regs/rp2040.svd",
 
             "showDevDebugOutput": "raw"
         }

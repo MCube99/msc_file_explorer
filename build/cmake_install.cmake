@@ -1,4 +1,4 @@
-# Install script for directory: C:/Users/mmadha/OneDrive - Transformers and Rectifiers Ltd/Desktop/bare_api/msc_file_explorer
+# Install script for directory: C:/msc_file_explorer/msc_file_explorer
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -12,7 +12,7 @@ if(NOT DEFINED CMAKE_INSTALL_CONFIG_NAME)
     string(REGEX REPLACE "^[^A-Za-z0-9_]+" ""
            CMAKE_INSTALL_CONFIG_NAME "${BUILD_TYPE}")
   else()
-    set(CMAKE_INSTALL_CONFIG_NAME "Debug")
+    set(CMAKE_INSTALL_CONFIG_NAME "Release")
   endif()
   message(STATUS "Install configuration: \"${CMAKE_INSTALL_CONFIG_NAME}\"")
 endif()
@@ -34,43 +34,43 @@ endif()
 
 # Set path to fallback-tool for dependency-resolution.
 if(NOT DEFINED CMAKE_OBJDUMP)
-  set(CMAKE_OBJDUMP "C:/Users/mmadha/.pico-sdk/toolchain/14_2_Rel1/bin/arm-none-eabi-objdump.exe")
+  set(CMAKE_OBJDUMP "C:/Users/Mypc/.pico-sdk/toolchain/14_2_Rel1/bin/arm-none-eabi-objdump.exe")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("C:/Users/mmadha/OneDrive - Transformers and Rectifiers Ltd/Desktop/bare_api/msc_file_explorer/build/pico-sdk/cmake_install.cmake")
+  include("C:/msc_file_explorer/msc_file_explorer/build/pico-sdk/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("C:/Users/mmadha/OneDrive - Transformers and Rectifiers Ltd/Desktop/bare_api/msc_file_explorer/build/fatfs/cmake_install.cmake")
+  include("C:/msc_file_explorer/msc_file_explorer/build/fatfs/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("C:/Users/mmadha/OneDrive - Transformers and Rectifiers Ltd/Desktop/bare_api/msc_file_explorer/build/hardware_processing/cmake_install.cmake")
+  include("C:/msc_file_explorer/msc_file_explorer/build/hardware_processing/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("C:/Users/mmadha/OneDrive - Transformers and Rectifiers Ltd/Desktop/bare_api/msc_file_explorer/build/file_processing/cmake_install.cmake")
+  include("C:/msc_file_explorer/msc_file_explorer/build/file_processing/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("C:/Users/mmadha/OneDrive - Transformers and Rectifiers Ltd/Desktop/bare_api/msc_file_explorer/build/tusb_src/cmake_install.cmake")
+  include("C:/msc_file_explorer/msc_file_explorer/build/tusb_src/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("C:/Users/mmadha/OneDrive - Transformers and Rectifiers Ltd/Desktop/bare_api/msc_file_explorer/build/app/cmake_install.cmake")
+  include("C:/msc_file_explorer/msc_file_explorer/build/app/cmake_install.cmake")
 endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
 if(CMAKE_INSTALL_LOCAL_ONLY)
-  file(WRITE "C:/Users/mmadha/OneDrive - Transformers and Rectifiers Ltd/Desktop/bare_api/msc_file_explorer/build/install_local_manifest.txt"
+  file(WRITE "C:/msc_file_explorer/msc_file_explorer/build/install_local_manifest.txt"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")
 endif()
 if(CMAKE_INSTALL_COMPONENT)
@@ -86,6 +86,6 @@ else()
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
-  file(WRITE "C:/Users/mmadha/OneDrive - Transformers and Rectifiers Ltd/Desktop/bare_api/msc_file_explorer/build/${CMAKE_INSTALL_MANIFEST}"
+  file(WRITE "C:/msc_file_explorer/msc_file_explorer/build/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")
 endif()

@@ -1,9 +1,9 @@
 #include "ff.h"
 #include "file_processing.h"
-#include "hardware_processing.h"
 #include <stddef.h>
 #include <stdio.h>
 #include <stdbool.h>
+#include <string.h>
 
 typedef struct 
 {
@@ -15,28 +15,33 @@ typedef struct
 
 
 
+static uint8_t folder_buffer[BUF_LEN ];
+
+
+
+
 // Forward declarations
 FRESULT start(void);
-FRESULT ok(FRESULT *fr);
-FRESULT no_file(FRESULT *fr);
-FRESULT no_path(FRESULT *fr);
-FRESULT no_folder(FRESULT *fr);
-FRESULT invalid_name(FRESULT *fr);
-FRESULT denied(FRESULT *fr);
-FRESULT exist(FRESULT *fr);
-FRESULT invalid_object(FRESULT *fr);
-FRESULT not_enabled(FRESULT *fr);
-FRESULT no_filesystem(FRESULT *fr);
-FRESULT mkfs_aborted(FRESULT *fr);
-FRESULT timeout(FRESULT *fr);
-FRESULT locked(FRESULT *fr);
-FRESULT too_many_open_files(FRESULT *fr);
-FRESULT start_error(FRESULT *fr);
+FRESULT ok(FRESULT fr);
+FRESULT no_file(FRESULT fr);
+FRESULT no_path(FRESULT fr);
+FRESULT no_folder(FRESULT fr);
+FRESULT invalid_name(FRESULT fr);
+FRESULT denied(FRESULT fr);
+FRESULT exist(FRESULT fr);
+FRESULT invalid_object(FRESULT fr);
+FRESULT not_enabled(FRESULT fr);
+FRESULT no_filesystem(FRESULT fr);
+FRESULT mkfs_aborted(FRESULT fr);
+FRESULT timeout(FRESULT fr);
+FRESULT locked(FRESULT fr);
+FRESULT too_many_open_files(FRESULT fr);
+FRESULT start_error(FRESULT fr);
 
 
 
 
-FRESULT (*handle_error[])(FRESULT *fr) = {
+FRESULT (*handle_error[])(FRESULT fr) = {
     ok,       // FR_OK = 0 → no error handler
     no_file,    // FR_NO_FILE = 1
     no_path,    // FR_NO_PATH = 2
@@ -54,20 +59,30 @@ FRESULT (*handle_error[])(FRESULT *fr) = {
     start_error // FR_START = 13
 };
 
+
+
 Exists_check exists_check = {0};
 
-void file_processing_main(void) {
-    FRESULT fr;
-    fr = start();
+// the function below exists to work on the results and errors
 
-     // Check for hardware/system errors
+PUBLIC void file_processing_main( const volatile  uint8_t* buffer, int size ) {
+    FRESULT fr;
+    int i = 0;
+
+    for(;i<size;i++)
+    {
+        folder_buffer[i] = buffer[i];
+    }
+    
+    // memcpy(folder_buffer, buffer, sizeof(buffer)*size);
+    fr = start();
     
 // This state machine is mainly for error handling. The ones in the if statement are hardware issues and can't be fixed by me. The ones in the state machine hopefully can.
     while(1){
-        if(fr == FR_DISK_ERR || fr == FR_NOT_READY ||fr == FR_WRITE_PROTECTED || fr == FR_INT_ERR) {
+        if( fr == FR_DISK_ERR || fr == FR_NOT_READY ||fr == FR_WRITE_PROTECTED || fr == FR_INT_ERR ) {
              break; //idk what to do if there is an hardware issue
         }
-        handle_error[fr](&fr);
+         fr = handle_error[fr](fr);
     }
     
 }
@@ -76,25 +91,28 @@ void file_processing_main(void) {
 
 ///////////FRESULT functions/////////////////////////
 
-FRESULT ok(FRESULT *fr) {// This is the function to check what needs to be done. 
+FRESULT ok(FRESULT fr) {// This is the function to check what needs to be done. 
 
     if(!exists_check.path_exists)
     {
-         *fr = FR_NO_PATH;
-         return(*fr);
+         fr = FR_NO_PATH;
+         return(fr);
     }
 
     if(!exists_check.folder_exists)
     {
-        *fr = FR_NO_FOLDER;
-        return(*fr);
+        fr = FR_NO_FOLDER;
+        return(fr);
     }
 
     if(!exists_check.file_exists)
     {
-        *fr = FR_NO_FILE;
-        return(*fr);
+        fr = FR_NO_FILE;
+        return(fr);
     }
+
+
+
 
 }
 
@@ -106,81 +124,86 @@ FRESULT start() { //This is the kick off function where the pico tries to mount 
     return(fr); //sets off whole reaction
 }
 
-FRESULT no_path( FRESULT *fr) {  //add functionality for subdrectories
+FRESULT no_path( FRESULT fr) {  //add functionality for subdrectories
     FIL fil;
+    UINT br, bw;
+
     char conversion[NUMBER_OF_BYTES + 1];
+    snprintf(conversion, sizeof(conversion), "%s", folder_buffer);
     const char *fname = "TRTEST";
-    *fr = f_mkdir(fname);
+    fr = f_mkdir(fname);
     f_chdir("TRTEST");
-    *fr = f_open(&fil, "newfile.txt", FA_WRITE | FA_CREATE_ALWAYS);	/* Create a file */
-	if (*fr == FR_OK) {
-	//	f_write(&fil, "It works!\r\n", 11, &bw);	/* Write data to the file */
-        f_puts(conversion, &fil);
-		*fr = f_close(&fil);	
+    fr = f_open(&fil, "newfile.txt", FA_WRITE | FA_CREATE_ALWAYS);	/* Create a file */
+	if (fr == FR_OK) {
+		f_write(&fil, "It works!\r\n", 11, &bw);	/* Write data to the file */
+        f_putc(conversion[0], &fil);
+		fr = f_close(&fil);	
     }
+
+    return(fr);
 }
 
 
-FRESULT no_file(FRESULT *fr) {
+FRESULT no_file(FRESULT fr) {
     FIL fil;
     UINT br, bw;  
     char conversion[NUMBER_OF_BYTES + 1];
 
     f_chdir("TRTEST");
-    *fr = f_open(&fil, "newfile.txt", FA_WRITE | FA_CREATE_ALWAYS);	/* Create a file */
-	if (*fr == FR_OK) {
-	//	f_write(&fil, "It works!\r\n", 11, &bw);	/* Write data to the file */
+    fr = f_open(&fil, "newfile.txt", FA_WRITE | FA_CREATE_ALWAYS);	/* Create a file */
+	if (fr == FR_OK) {
+		f_write(&fil, "It works!\r\n", 11, &bw);	/* Write data to the file */
         f_puts(conversion, &fil);
-		*fr = f_close(&fil);	
+		fr = f_close(&fil);	
     }
-    return(*fr);
+    return(fr);
 }
 
-FRESULT no_folder(FRESULT *fr)
+FRESULT no_folder(FRESULT fr)
 {
     FILINFO fno;
 
     const char *fname = "TRTEST";
-    *fr = f_stat(fname, &fno); //checks for the file name
-    if(*fr == FR_OK){
+    fr = f_stat(fname, &fno); //checks for the file name
+    if(fr == FR_OK){
         if (fno.fattrib & AM_DIR) { //checks if directory was created
             exists_check.folder_exists = true;
         } 
         else {
-            *fr = f_mkdir(fname); 
+            fr = f_mkdir(fname); 
             // will leave the flag still false so it can come and check its been done later
           }
     }
 
-    return(*fr);
+    return(fr);
 }
 
-FRESULT invalid_name(FRESULT *fr)
+FRESULT invalid_name(FRESULT fr)
 {
     ;
 }
 
-FRESULT denied( FRESULT *fr)
+FRESULT denied( FRESULT fr)
 {
     ;
 }
 
-FRESULT exist(FRESULT *fr)
+FRESULT exist(FRESULT fr)
 {
     ;
 }
 
-FRESULT invalid_object(FRESULT *fr)
+FRESULT invalid_object(FRESULT fr)
 {
     ;
 }
 
-FRESULT not_enabled(FRESULT *fr)
+FRESULT not_enabled(FRESULT fr)
 {
     ;
 }
 
-FRESULT no_filesystem(FRESULT *fr)
+FRESULT no_filesystem(FRESULT fr)
 {
    
     uint8_t work[FF_MAX_SS];
@@ -190,27 +213,27 @@ FRESULT no_filesystem(FRESULT *fr)
     return(f_mount(&fs, "0:", 1));                 /*makes another attempt at mounting it*/
 }
 
-FRESULT mkfs_aborted(FRESULT *fr)
+FRESULT mkfs_aborted(FRESULT fr)
 {
     ;
 }
 
-FRESULT timeout(FRESULT *fr)
+FRESULT timeout(FRESULT fr)
 {
     ;
 }
 
-FRESULT locked(FRESULT *fr)
+FRESULT locked(FRESULT fr)
 {
     ;
 }
 
-FRESULT too_many_open_files(FRESULT *fr)
+FRESULT too_many_open_files(FRESULT fr)
 {
     ;
 }
 
-FRESULT start_error(FRESULT *fr)
+FRESULT start_error(FRESULT fr)
 {
     ;
 }
@@ -277,6 +300,15 @@ static void add_subdirectory() //need to get date time stamp and stuff and use t
     }
 
 }
+
+// static char* convert_to_string(uint8_t *input) {
+//     char result[257];
+//     for(int i = 0; i < 257; i++)
+//     {
+//         result[i] = 
+//     }
+
+// }
 
 
 /* static const char* convert_datetime_to_string()
