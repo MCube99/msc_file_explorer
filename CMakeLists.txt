@@ -149,6 +149,7 @@ project(msc_file_explorer C CXX ASM)
 pico_sdk_init()
 
 
+add_definitions(-DPICO_NO_RAM_VECTOR_TABLE=0)
 include_directories(tusb_config) ##include in all
 add_subdirectory(fatfs)
 add_subdirectory(hardware_processing)

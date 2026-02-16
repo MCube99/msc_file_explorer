@@ -63,37 +63,57 @@
 #include "msc_app.h"
 #include "file_processing.h"
 #include "hardware_processing.h"
+#include "queue.h"
 #include "pico/stdlib.h"
-
+#include "pico/time.h"
+#include "hardware/watchdog.h" 
+#include "hardware/structs/sio.h"
 #define FALSE 0
 #define TRUE  1
+
+
+
+ // 
+
 
 //--------------------------------------------------------------------+
 // MACRO CONSTANT TYPEDEF PROTYPES
 //--------------------------------------------------------------------+
 void led_blinking_task(void);
 
+/// Defining Flags ////
+
+volatile bool csn_low = false;
+
 
 
 /*------------- MAIN -------------*/
 int main(void) {
-  volatile bool spi_transfer = FALSE;           // a flag to indicate if SPI transfer has happened(FALSE) or will happen (TRUE)
-  static char conversion[ NUMBER_OF_BYTES + 1 ];       // to convert to string.
-  static uint8_t in_buf[ BUF_LEN ];
 
-     
-  stdio_init_all();     
-  timer_hw->dbgpause = 0;
+   
+  uint8_t in_buf[ BUF_LEN ];
+  uint8_t copy_buffer[ BUF_LEN ];
+
+  
+
+
+
+
+  stdio_init_all();
+  timer_hw->dbgpause = 0; 
+    
+  
   board_init();
   set_spi_gpio_pins();
-  if( spi_transfer == FALSE ) // Also nonrentrant functions are done here
-  {
-       uint32_t status = save_and_disable_interrupts(); // this is so that the interrupts don't fire up over here when spi stuff is being set up
-       prepare_memory_for_spi_transfer( conversion, NUMBER_OF_BYTES, in_buf );
-       spi_irq_setup_init();
-       spi_transfer = TRUE;
-       restore_interrupts_from_disabled(status);
-  }
+  spi_irq_setup_init();
+  
+  prepare_memory_for_spi_transfer( in_buf, copy_buffer );
+
+  
+
+    // this is so that the interrupts don't fire up over here when spi stuff is being set up
+//   prepare_memory_for_spi_transfer();
+//   ;
 
 //   bool spi_check = spi_irq_setup_init();
 
@@ -102,7 +122,7 @@ int main(void) {
 //       spi_transfer = TRUE;
 //   }
   
-  printf("TinyUSB Host MassStorage Explorer Example\r\n");
+  
 
   // init host stack on configured roothub port
   tusb_rhport_init_t host_init = {
@@ -116,14 +136,37 @@ int main(void) {
   }
 
   msc_app_init();
-  
+
+
   while (1) {
     // tinyusb host task
-    tuh_task();
-    msc_app_task();
-    led_blinking_task();
-    hardware_processing(in_buf, conversion);
-    file_processing_main();
+    //if spi is true, then its still reading, hence don't go to the bottom
+     
+       tuh_task();
+       msc_app_task();
+       led_blinking_task();
+     
+// csn_low &&
+      if( !is_queue_empty())
+      {
+        copy_queue_buffer();
+        if(!spi_is_processing())
+        {
+           file_processing_main();
+        }
+       
+      }
+     
+     
+     
+
+    
+    
+     //gpio_set_irq_active(DEBUG_PIN, GPIO_IRQ_EDGE_RISE, false);
+     
+     //gpio_set_irq_active(DEBUG_PIN, GPIO_IRQ_EDGE_FALL, true);
+    //  
+     
   }
 
   return 0;
@@ -167,3 +210,9 @@ void tusb_time_delay_ms_api(uint32_t ms) {
 void tuh_hid_report_received_cb(uint8_t dev_addr, uint8_t instance, uint8_t const* report, uint16_t len) {
     // Handle received HID report here
 }
+
+//--------------------------------------------------------------------+
+// Array processign tasks
+//--------------------------------------------------------------------+
+
+

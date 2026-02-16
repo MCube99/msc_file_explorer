@@ -15,10 +15,10 @@
 ########################
 
 //Path to a program.
-CMAKE_ADDR2LINE:FILEPATH=C:/Program Files (x86)/GNU Arm Embedded Toolchain/10 2021.10/bin/arm-none-eabi-addr2line.exe
+CMAKE_ADDR2LINE:FILEPATH=C:/Users/mmadha/.pico-sdk/toolchain/14_2_Rel1/bin/arm-none-eabi-addr2line.exe
 
 //Path to a program.
-CMAKE_AR:FILEPATH=C:/Program Files (x86)/GNU Arm Embedded Toolchain/10 2021.10/bin/arm-none-eabi-ar.exe
+CMAKE_AR:FILEPATH=C:/Users/mmadha/.pico-sdk/toolchain/14_2_Rel1/bin/arm-none-eabi-ar.exe
 
 //ASM compiler
 CMAKE_ASM_COMPILER:STRING=C:/Users/mmadha/.pico-sdk/toolchain/14_2_Rel1/bin/arm-none-eabi-gcc.exe
@@ -46,19 +46,20 @@ CMAKE_ASM_FLAGS_RELEASE:STRING=-g -O3 -DNDEBUG
 //Flags used by the ASM compiler during RELWITHDEBINFO builds.
 CMAKE_ASM_FLAGS_RELWITHDEBINFO:STRING=-O2 -g -DNDEBUG
 
-//No help, variable specified on the command line.
-CMAKE_BUILD_TYPE:STRING=Debug
+//Choose the type of build, options are: 'Debug', 'Release', 'MinSizeRel',
+// 'RelWithDebInfo'.
+CMAKE_BUILD_TYPE:STRING=Release
 
 //CXX compiler
-CMAKE_CXX_COMPILER:STRING=C:/Program Files (x86)/GNU Arm Embedded Toolchain/10 2021.10/bin/arm-none-eabi-g++.exe
+CMAKE_CXX_COMPILER:STRING=C:/Users/mmadha/.pico-sdk/toolchain/14_2_Rel1/bin/arm-none-eabi-g++.exe
 
 //A wrapper around 'ar' adding the appropriate '--plugin' option
 // for the GCC compiler
-CMAKE_CXX_COMPILER_AR:FILEPATH=C:/Program Files (x86)/GNU Arm Embedded Toolchain/10 2021.10/bin/arm-none-eabi-gcc-ar.exe
+CMAKE_CXX_COMPILER_AR:FILEPATH=C:/Users/mmadha/.pico-sdk/toolchain/14_2_Rel1/bin/arm-none-eabi-gcc-ar.exe
 
 //A wrapper around 'ranlib' adding the appropriate '--plugin' option
 // for the GCC compiler
-CMAKE_CXX_COMPILER_RANLIB:FILEPATH=C:/Program Files (x86)/GNU Arm Embedded Toolchain/10 2021.10/bin/arm-none-eabi-gcc-ranlib.exe
+CMAKE_CXX_COMPILER_RANLIB:FILEPATH=C:/Users/mmadha/.pico-sdk/toolchain/14_2_Rel1/bin/arm-none-eabi-gcc-ranlib.exe
 
 //Flags used by the CXX compiler during all build types.
 CMAKE_CXX_FLAGS:STRING=-mcpu=cortex-m0plus -mthumb
@@ -76,15 +77,15 @@ CMAKE_CXX_FLAGS_RELEASE:STRING=-g -O3 -DNDEBUG
 CMAKE_CXX_FLAGS_RELWITHDEBINFO:STRING=-O2 -g -DNDEBUG
 
 //C compiler
-CMAKE_C_COMPILER:STRING=C:/Program Files (x86)/GNU Arm Embedded Toolchain/10 2021.10/bin/arm-none-eabi-gcc.exe
+CMAKE_C_COMPILER:STRING=C:/Users/mmadha/.pico-sdk/toolchain/14_2_Rel1/bin/arm-none-eabi-gcc.exe
 
 //A wrapper around 'ar' adding the appropriate '--plugin' option
 // for the GCC compiler
-CMAKE_C_COMPILER_AR:FILEPATH=C:/Program Files (x86)/GNU Arm Embedded Toolchain/10 2021.10/bin/arm-none-eabi-gcc-ar.exe
+CMAKE_C_COMPILER_AR:FILEPATH=C:/Users/mmadha/.pico-sdk/toolchain/14_2_Rel1/bin/arm-none-eabi-gcc-ar.exe
 
 //A wrapper around 'ranlib' adding the appropriate '--plugin' option
 // for the GCC compiler
-CMAKE_C_COMPILER_RANLIB:FILEPATH=C:/Program Files (x86)/GNU Arm Embedded Toolchain/10 2021.10/bin/arm-none-eabi-gcc-ranlib.exe
+CMAKE_C_COMPILER_RANLIB:FILEPATH=C:/Users/mmadha/.pico-sdk/toolchain/14_2_Rel1/bin/arm-none-eabi-gcc-ranlib.exe
 
 //Flags used by the C compiler during all build types.
 CMAKE_C_FLAGS:STRING=-mcpu=cortex-m0plus -mthumb
@@ -129,10 +130,10 @@ CMAKE_FIND_PACKAGE_REDIRECTS_DIR:STATIC=C:/Users/mmadha/OneDrive - Transformers 
 CMAKE_INSTALL_PREFIX:PATH=C:/Program Files (x86)/msc_file_explorer
 
 //Path to a program.
-CMAKE_LINKER:FILEPATH=C:/Program Files (x86)/GNU Arm Embedded Toolchain/10 2021.10/bin/arm-none-eabi-ld.exe
+CMAKE_LINKER:FILEPATH=C:/Users/mmadha/.pico-sdk/toolchain/14_2_Rel1/bin/arm-none-eabi-ld.exe
 
-//No help, variable specified on the command line.
-CMAKE_MAKE_PROGRAM:FILEPATH=C:/Users/mmadha/ninja-win/ninja.exe
+//Program used to build from build.ninja files.
+CMAKE_MAKE_PROGRAM:FILEPATH=C:/Users/mmadha/.pico-sdk/ninja/v1.12.1/ninja.exe
 
 //Flags used by the linker during the creation of modules during
 // all build types.
@@ -155,7 +156,7 @@ CMAKE_MODULE_LINKER_FLAGS_RELEASE:STRING=
 CMAKE_MODULE_LINKER_FLAGS_RELWITHDEBINFO:STRING=
 
 //Path to a program.
-CMAKE_NM:FILEPATH=C:/Program Files (x86)/GNU Arm Embedded Toolchain/10 2021.10/bin/arm-none-eabi-nm.exe
+CMAKE_NM:FILEPATH=C:/Users/mmadha/.pico-sdk/toolchain/14_2_Rel1/bin/arm-none-eabi-nm.exe
 
 CMAKE_OBJCOPY:FILEPATH=C:/Users/mmadha/.pico-sdk/toolchain/14_2_Rel1/bin/arm-none-eabi-objcopy.exe
 
@@ -171,10 +172,10 @@ CMAKE_PROJECT_HOMEPAGE_URL:STATIC=
 CMAKE_PROJECT_NAME:STATIC=msc_file_explorer
 
 //Path to a program.
-CMAKE_RANLIB:FILEPATH=C:/Program Files (x86)/GNU Arm Embedded Toolchain/10 2021.10/bin/arm-none-eabi-ranlib.exe
+CMAKE_RANLIB:FILEPATH=C:/Users/mmadha/.pico-sdk/toolchain/14_2_Rel1/bin/arm-none-eabi-ranlib.exe
 
 //Path to a program.
-CMAKE_READELF:FILEPATH=C:/Program Files (x86)/GNU Arm Embedded Toolchain/10 2021.10/bin/arm-none-eabi-readelf.exe
+CMAKE_READELF:FILEPATH=C:/Users/mmadha/.pico-sdk/toolchain/14_2_Rel1/bin/arm-none-eabi-readelf.exe
 
 //Flags used by the linker during the creation of shared libraries
 // during all build types.
@@ -224,7 +225,7 @@ CMAKE_STATIC_LINKER_FLAGS_RELEASE:STRING=
 CMAKE_STATIC_LINKER_FLAGS_RELWITHDEBINFO:STRING=
 
 //Path to a program.
-CMAKE_STRIP:FILEPATH=C:/Program Files (x86)/GNU Arm Embedded Toolchain/10 2021.10/bin/arm-none-eabi-strip.exe
+CMAKE_STRIP:FILEPATH=C:/Users/mmadha/.pico-sdk/toolchain/14_2_Rel1/bin/arm-none-eabi-strip.exe
 
 //Path to a program.
 CMAKE_TAPI:FILEPATH=CMAKE_TAPI-NOTFOUND
@@ -280,9 +281,6 @@ PICO_DEBUG_INFO_IN_RELEASE:BOOL=ON
 
 //boot stage 2 short name
 PICO_DEFAULT_BOOT_STAGE2:STRING=compile_time_choice
-
-//No help, variable specified on the command line.
-PICO_DEFAULT_GCC_TRIPLE:STRING=arm-none-eabi
 
 //Build debug builds with -O0
 PICO_DEOPTIMIZED_DEBUG:BOOL=OFF
@@ -376,6 +374,8 @@ CMAKE_ASM_FLAGS_MINSIZEREL-ADVANCED:INTERNAL=1
 CMAKE_ASM_FLAGS_RELEASE-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_ASM_FLAGS_RELWITHDEBINFO
 CMAKE_ASM_FLAGS_RELWITHDEBINFO-ADVANCED:INTERNAL=1
+//STRINGS property for variable: CMAKE_BUILD_TYPE
+CMAKE_BUILD_TYPE-STRINGS:INTERNAL=Debug;Release;MinSizeRel;RelWithDebInfo
 //This is the directory where this CMakeCache.txt was created
 CMAKE_CACHEFILE_DIR:INTERNAL=c:/Users/mmadha/OneDrive - Transformers and Rectifiers Ltd/Desktop/bare_api/msc_file_explorer/build
 //Major version of cmake used to create the current loaded cache
@@ -455,6 +455,8 @@ CMAKE_GENERATOR_TOOLSET:INTERNAL=
 CMAKE_HOME_DIRECTORY:INTERNAL=C:/Users/mmadha/OneDrive - Transformers and Rectifiers Ltd/Desktop/bare_api/msc_file_explorer
 //ADVANCED property for variable: CMAKE_LINKER
 CMAKE_LINKER-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: CMAKE_MAKE_PROGRAM
+CMAKE_MAKE_PROGRAM-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_MODULE_LINKER_FLAGS
 CMAKE_MODULE_LINKER_FLAGS-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_MODULE_LINKER_FLAGS_DEBUG

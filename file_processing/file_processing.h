@@ -1,10 +1,13 @@
 // file_processing.h
 #pragma once
 
+#include "hardware_processing.h"
+
 typedef enum
 {
     MOUNT_SUCCESSFUL = 0,
     FILE_CREATED_SUCCESSFUL,
 }FSUCCESS;
 
-void file_processing_main(void);
+PUBLIC void file_processing_main();
+PUBLIC void append_char(uint16_t byte);

@@ -54,13 +54,14 @@
 {
     "version": "0.2.0",
     "configurations": [
+        
         {
             "name": "Pico Debug (RP2040)",
             "type": "cortex-debug",
             "request": "launch",
 
             "cwd": "${workspaceFolder}",
-            "executable": "${workspaceFolder}/build/app/app_main.elf",
+            "executable": "${command:cmake.launchTargetPath}",
 
             "servertype": "openocd",
             "device": "RP2040",
@@ -76,6 +77,11 @@
 
             "postLaunchCommands": [
                 "monitor reset halt"
+            ],
+
+            "postRestartCommands": [
+                "break main",
+                "continue"
             ],
 
             "runToEntryPoint": "main",

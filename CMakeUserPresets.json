@@ -1,40 +1,23 @@
 {
-    "version": 2,
-    "configurePresets": [
-        {
-            "name": "ninja",
-            "generator": "Ninja",
-            "binaryDir": "build",
-            "cacheVariables": {
-                "PICO_TOOLCHAIN_PATH": {
-                    "type": "PATH",
-                    "value": "C:/Program Files (x86)/GNU Arm Embedded Toolchain/10 2021.10/bin"
-                },
-                "CMAKE_TOOLCHAIN_FILE": {
-                    "type": "FILEPATH",
-                    "value": "C:/Users/mmadha/.pico-sdk/sdk/2.2.0/cmake/preload/toolchains/pico_arm_cortex_m0plus_gcc.cmake"
-                },
-                "CMAKE_C_COMPILER": {
-                    "type": "FILEPATH",
-                    "value": "C:/Program Files (x86)/GNU Arm Embedded Toolchain/10 2021.10/bin/arm-none-eabi-gcc.exe"
-                },
-                "CMAKE_CXX_COMPILER": {
-                    "type": "FILEPATH",
-                    "value": "C:/Program Files (x86)/GNU Arm Embedded Toolchain/10 2021.10/bin/arm-none-eabi-g++.exe"
-                },
-                "CMAKE_MAKE_PROGRAM": {
-                    "type": "FILEPATH",
-                    "value": "C:/Users/mmadha/ninja-win/ninja.exe"
-                },
-                "PICO_DEFAULT_GCC_TRIPLE": {
-                    "type": "STRING",
-                    "value": "arm-none-eabi"
-                },
-                "CMAKE_BUILD_TYPE": {
-                    "type": "STRING",
-                    "value": "Debug"
-                }
-            }
-        }
-    ]
+  "version": 2,
+  "configurePresets": [
+    {
+      "name": "user-pico-debug",
+      "displayName": "User Pico Debug (Ninja)",
+      "inherits": "ci-pico-debug",
+      "cacheVariables": {
+        "PICO_TOOLCHAIN_PATH": "C:/Program Files (x86)/GNU Arm Embedded Toolchain/10 2021.10/bin",
+        "CMAKE_MAKE_PROGRAM": "C:/Users/mmadha/ninja-win/ninja.exe"
+      }
+    },
+    {
+      "name": "user-pico-release",
+      "displayName": "User Pico Release (Ninja)",
+      "inherits": "ci-pico-release",
+      "cacheVariables": {
+        "PICO_TOOLCHAIN_PATH": "C:/Program Files (x86)/GNU Arm Embedded Toolchain/10 2021.10/bin",
+        "CMAKE_MAKE_PROGRAM": "C:/Users/mmadha/ninja-win/ninja.exe"
+      }
+    }
+  ]
 }
