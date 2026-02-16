@@ -62,6 +62,18 @@ PUBLIC void prepare_memory_for_spi_transfer( uint8_t *buffer, uint8_t *copy_buff
 
 }
 
+PRIVATE uint32_t gpio_get_events(uint gpio) {
+    int32_t mask = 0xF << 4 * (gpio % 8);
+    return(iobanks0_hw->intr[gpio/8] & mask) >> 4 * ( gpio%8);
+}
+
+
+PRIVATE gpio_clear_events(uint gpio, uint32_t events) {
+    gpio_acknowledge_irq(gpio, events);
+}
+
+
+
 PUBLIC void set_spi_gpio_pins() {
 
     // 1.263Mhz or 2MHZ
@@ -89,7 +101,9 @@ PUBLIC void set_spi_gpio_pins() {
     gpio_set_dir(DEBUG_PIN, false);
     gpio_pull_up(DEBUG_PIN);
 
-    // gpio_set_irq_enabled_with_callback(DEBUG_PIN, GPIO_IRQ_EDGE_FALL | GPIO_IRQ_EDGE_RISE ,true, &spi0_irq_handler);
+    gpio_clear_events(DEBUG_PIN, GPIO_IRQ_EDGE_RISE| GPIO_IRQ_EDGE_FALL);
+
+     gpio_set_irq_enabled_with_callback(DEBUG_PIN, GPIO_IRQ_EDGE_FALL | GPIO_IRQ_EDGE_RISE ,true, &spi0_irq_handler);
 
     // | GPIO_IRQ_EDGE_RISE | GPIO_IRQ_LEVEL_HIGH
    // irq_set_priority(SIO_IRQ_PROC0,1);
@@ -111,13 +125,13 @@ PUBLIC bool spi_irq_setup_init(void)
     // Enable desired SPI interrupt sources
     hw_set_bits(&spi_get_hw(spi0)->imsc,
                 SPI_SSPIMSC_RTIM_BITS | SPI_SSPIMSC_RXIM_BITS | SPI_SSPIMSC_RORIM_BITS);
-      int array_check[32] = {0};
-      uint32_t locks =sio_hw->spinlock_st;
-      for (int i = 0; i < 32; i++) {
-        if (locks & (1u << i)) {
-            array_check[i] = 1;
-        }
-      }
+    //   int array_check[32] = {0};
+    //   uint32_t locks =sio_hw->spinlock_st;
+    //   for (int i = 0; i < 32; i++) {
+    //     if (locks & (1u << i)) {
+    //         array_check[i] = 1;
+    //     }
+    //   }
 
 //         if(array_check[i] == 1) {
 //             spin_lock_t *lock = spin_lock_instance(i); // Example: Lock 0
@@ -127,10 +141,10 @@ PUBLIC bool spi_irq_setup_init(void)
 //     }
 
     // Assign SPI0 IRQ handler **before enabling the IRQ**
-    irq_set_exclusive_handler(SPI0_IRQ, spi0_irq_handler);
-    irq_set_enabled(SPI0_IRQ, true);
+    // irq_set_exclusive_handler(SPI0_IRQ, spi0_irq_handler);
+    // irq_set_enabled(SPI0_IRQ, true);
 
-    return irq_is_enabled(SPI0_IRQ);
+    // return irq_is_enabled(SPI0_IRQ);
 }
 
 
