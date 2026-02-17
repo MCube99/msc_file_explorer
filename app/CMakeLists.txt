@@ -23,6 +23,6 @@ target_sources(app_main
 
 
 target_link_libraries(app_main PUBLIC file_processing)
-target_compile_definitions(app_main PUBLIC CFG_TUH_ENABLED=1 CFG_TUH_LOG=0)
 
+pico_enable_stdio_uart(app_main 0)
 pico_add_extra_outputs(app_main)

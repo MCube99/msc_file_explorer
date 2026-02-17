@@ -19,7 +19,7 @@ static struct queue_type myQueue;
 PUBLIC void queue_init( ) {
     myQueue.front = 0;                // start read index at 0
     myQueue.rear = 0;                 // start write index at 0
-    memset(myQueue.buffer, 0, BUF_LEN * sizeof(int)); // initialize all buffer elements to 0
+    memset(myQueue.buffer, 0, BUF_LEN); // initialize all buffer elements to 0
 }
 
 
@@ -42,14 +42,15 @@ PUBLIC bool enqueue( uint16_t x ) {
 
 
 
-PUBLIC bool dequeue( uint8_t *x ) {
+PUBLIC bool dequeue( uint16_t *x ) {
     if ( myQueue.front == myQueue.rear ) {
         return false; // buffer empty
     }
 
     else {
-         myQueue.front = (myQueue.front + 1) % BUF_LEN; // The modulus is a condition to get it to move forward until the end and then loop back to start
         *x = myQueue.buffer[myQueue.front];
+         myQueue.front = (myQueue.front + 1) % BUF_LEN; // The modulus is a condition to get it to move forward until the end and then loop back to start
+        
         return true;
        
         

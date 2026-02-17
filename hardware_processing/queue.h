@@ -21,7 +21,7 @@
 // ADT API
 PUBLIC void queue_init();
 PUBLIC bool enqueue( uint16_t x );
-PUBLIC bool dequeue(uint8_t *x );
+PUBLIC bool dequeue(uint16_t *x );
 PUBLIC bool set_queue_empty() ;
 PUBLIC bool queue_is_full();
 PUBLIC bool queue_is_empty(void);

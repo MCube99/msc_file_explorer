@@ -74,6 +74,9 @@
 
  // 
 
+ 
+volatile bool spi_reading = true; // flag to inidcate whether or not the
+volatile bool csn_high = true;
 
 //--------------------------------------------------------------------+
 // MACRO CONSTANT TYPEDEF PROTYPES
@@ -81,8 +84,7 @@
 void led_blinking_task(void);
 
 
-volatile bool spi_reading = true; // flag to inidcate whether or not the
-volatile uint16_t spi_rx_len = 0;
+
 
 
 
@@ -100,6 +102,7 @@ int main(void) {
 
   board_init();
   set_spi_gpio_pins();
+  set_gpio_pins();
   spi_irq_setup_init();
   prepare_memory_for_spi_transfer(in_buf);
 
@@ -134,19 +137,29 @@ int main(void) {
 
   while (1) {
     // tinyusb host task
+   
     
-
 
     tuh_task();
     msc_app_task();
     led_blinking_task();
-    if( spi_reading )
+    
+
+    if(!csn_high) // the reading depends when the button is pressed, so when it goes high. This nots it
     {
-       spi_reading = true; //reinitialises it so it skips over bottom two lines next time round
-       continue; //goes back to the top if spi_reading is true(aka still reading)
+       copy_queue_buffer(); // 
     }
-    irq_processing_main( in_buf );
-    file_processing_main( in_buf, BUF_LEN );
+    else  //  
+    {
+       continue; //if csn is still high, meaning reading is still happening, so continue
+    }
+
+    if(queue_is_empty())
+    {
+       file_processing_main();
+    }
+    
+   
      
   }
 

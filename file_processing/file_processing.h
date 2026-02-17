@@ -9,4 +9,5 @@ typedef enum
     FILE_CREATED_SUCCESSFUL,
 }FSUCCESS;
 
-PUBLIC void file_processing_main( const volatile uint8_t* buffer, int size);
+PUBLIC void file_processing_main();
+PUBLIC unsigned int append_char(uint16_t byte);

@@ -29,35 +29,29 @@
 #include "pico/stdlib.h"
 #include "hardware/spi.h"
 #include "hardware_processing.h"
+#include "file_processing.h"
 #include "queue.h"
 #include "hardware/sync.h"
 #include "pico/time.h"
-
+#include "hardware/structs/iobank0.h"
 
 #define spi_default                         spi0
-// #define PICO_DEFAULT_SPI_SCK_PIN            2   // SPI clock, same as master
-// #define PICO_DEFAULT_SPI_RX_PIN             4
-// #define PICO_DEFAULT_SPI_TX_PIN             3
-// #define PICO_DEFAULT_SPI_CSN_PIN            5    
-
 #define PICO_DEFAULT_SPI_SCK_PIN            2   // SPI clock, same as master
-#define PICO_DEFAULT_SPI_RX_PIN             0   // MOSI from master → receive on slave
-#define PICO_DEFAULT_SPI_TX_PIN             3   // MISO to master → send from slave
-#define PICO_DEFAULT_SPI_CSN_PIN            1   // Chip select
-#define SPI_IRQ_PIN                         6   // GPIO pin for SPI interrupt line from master
+#define PICO_DEFAULT_SPI_RX_PIN             4
+#define PICO_DEFAULT_SPI_TX_PIN             3
+#define PICO_DEFAULT_SPI_CSN_PIN            5    
+#define DEBUG_PIN                         6
 
+//#define PICO_DEFAULT_SPI_SCK_PIN            2   // SPI clock, same as master
+//#define PICO_DEFAULT_SPI_RX_PIN             0   // MOSI from master → receive on slave
+//#define PICO_DEFAULT_SPI_TX_PIN             3   // MISO to master → send from slave
+//#define PICO_DEFAULT_SPI_CSN_PIN            1   // Chip select
+//   // GPIO pin for SPI interrupt line from master
 
-volatile DWORD *spi_base_reg       = ( volatile DWORD * )SPI0_BASE;
-volatile DWORD *spi_data_reg  = ( volatile DWORD * )( SPI0_BASE + SPI_DATA_REGISTER_OFFSET );  
-volatile DWORD *spi_status_reg = ( volatile DWORD * )( SPI0_BASE + SPI_STATUS_OFFSET );
-volatile DWORD *spi_interrupt_mask = ( volatile DWORD * )( SPI0_BASE + SPI_INTERRUPT_MASK_SET_OFFSET );
-volatile DWORD *spi_interrupt_mask_clear = ( volatile DWORD * )( SPI0_BASE + SPI_INTERRUPT_MASK_CLEAR_OFFSET );
-volatile DWORD *spi_interrupt_status = ( volatile DWORD * )( SPI0_BASE + SPI_INTERRUPT_MASK_STATUS_OFFSET ); 
-volatile DWORD *spi_interrupt_clear = ( volatile DWORD * )( SPI0_BASE + SPI_INTERRUPT_CLEAR_OFFSET );
 
 
 PRIVATE void convert_hex_to_string(const uint8_t *byte_array, int length, char *conversion);
-PRIVATE void irq_handler(void);
+PRIVATE void myIRQHandler(uint gpio, uint32_t events);
 
 
 
@@ -74,16 +68,78 @@ PUBLIC void prepare_memory_for_spi_transfer(uint8_t *in_buf) {
 
 }
 
+ PUBLIC void copy_queue_buffer(void)
+{
+    uint16_t x = 0;
+
+    gpio_set_irq_active(DEBUG_PIN,
+                        GPIO_IRQ_EDGE_FALL | GPIO_IRQ_EDGE_RISE,
+                        false);
+
+    while (dequeue(&x))
+    {
+        unsigned int count = append_char(x);
+
+        if (count == 0)
+        {
+            set_queue_empty();
+        }
+    }
+
+    gpio_set_irq_active(DEBUG_PIN,
+                        GPIO_IRQ_EDGE_FALL | GPIO_IRQ_EDGE_RISE,
+                        true);
+}
+
+
+PRIVATE void gpio_clear_events(uint gpio, uint32_t events) {
+    gpio_acknowledge_irq(gpio,events);
+}
+
+
+PRIVATE void myIRQHandler(uint gpio, uint32_t events) {
+    if( events & GPIO_IRQ_EDGE_FALL  )
+    {
+        spi0_irq_handler();
+        if(!spi_is_processing())
+        {
+            csn_high = true;
+        }
+        spi_reading = false;    //reading is done 
+    }
+
+    if( events & GPIO_IRQ_EDGE_RISE)
+    {
+        csn_high = false;
+        spi_reading = true; 
+    }
+
+      gpio_clear_events(gpio,events);
+}
+
+PUBLIC void set_gpio_pins() {
+    
+
+    gpio_set_function(DEBUG_PIN, GPIO_FUNC_SIO);
+    gpio_set_dir(DEBUG_PIN, GPIO_IN);
+    gpio_set_input_enabled(DEBUG_PIN, true); // interrupt line needs to detect input
+    gpio_pull_up(DEBUG_PIN);
+   
+    gpio_set_irq_enabled_with_callback(DEBUG_PIN, GPIO_IRQ_EDGE_FALL|GPIO_IRQ_EDGE_RISE, true, &myIRQHandler);
+
+
+}
+
 PUBLIC void set_spi_gpio_pins() {
 
     spi_init(spi_default,  1000 * 1000); // 1 MHz
 
     spi_set_format(
     spi0,
-    8,                    // bits
+    16,                    // bits
     SPI_CPOL_0,
     SPI_CPHA_0,
-    SPI_MSB_FIRST
+    SPI_LSB_FIRST
     );
 
     spi_set_slave(spi_default, true);
@@ -91,94 +147,61 @@ PUBLIC void set_spi_gpio_pins() {
     gpio_set_function(PICO_DEFAULT_SPI_SCK_PIN, GPIO_FUNC_SPI);
     gpio_set_function(PICO_DEFAULT_SPI_TX_PIN, GPIO_FUNC_SPI);
     gpio_set_function(PICO_DEFAULT_SPI_CSN_PIN, GPIO_FUNC_SPI);
-    gpio_set_function(SPI_IRQ_PIN, GPIO_FUNC_SIO);
-    gpio_set_dir(SPI_IRQ_PIN, GPIO_IN);
-    gpio_set_input_enabled(SPI_IRQ_PIN, true); // interrupt line needs to detect input
-
+    
 
 }
+
+
+
+
+PUBLIC void gpio_set_irq_active(uint gpio, uint32_t events, bool enabled) {
+    io_bank0_irq_ctrl_hw_t *irq_ctrl_base = get_core_num() ? &io_bank0_hw->proc1_irq_ctrl : &io_bank0_hw->proc0_irq_ctrl;
+    io_rw_32 *en_reg = &irq_ctrl_base-> inte[gpio/8];
+    events<<= 4 * (gpio%8);
+    if(enabled)
+    {
+        hw_set_bits(en_reg,events);
+    }
+    else
+    {
+        hw_clear_bits(en_reg, events);
+    }
+}
+
 
 
 PUBLIC bool spi_irq_setup_init(void)
 {
-    // Disable SPI IRQ while configuring
-    irq_set_enabled(SPI0_IRQ, false);
-    irq_set_priority(SPI0_IRQ,0);
+     hw_set_bits(&spi_get_hw(spi0)->icr, SPI_SSPICR_RTIC_BITS | SPI_SSPICR_RORIC_BITS);
 
-    // Mask ONLY the interrupts we want
-    spi0_hw->imsc =
-          RXIM_BIT    // RX FIFO interrupt (RNE)
-        | RORIM_BIT;  // RX overrun error
+    // Clear interrupt mask
+    hw_clear_bits(&spi_get_hw(spi0)->imsc, SPI_SSPIMSC_BITS);
 
-    // Register SPI IRQ handler
-    irq_set_exclusive_handler(SPI0_IRQ, irq_handler);
-
-    // Enable SPI IRQ
-    irq_set_enabled(SPI0_IRQ, true);
-
-    return irq_is_enabled(SPI0_IRQ);
+    // Enable desired SPI interrupt sources
+    hw_set_bits(&spi_get_hw(spi0)->imsc,
+                SPI_SSPIMSC_RTIM_BITS | SPI_SSPIMSC_RXIM_BITS | SPI_SSPIMSC_RORIM_BITS);
 }
 
 
-PUBLIC void irq_processing_main( uint8_t *in_buf ) {
-    int count = 0;
-    int rear = return_rear();
-    uint8_t x;
 
-    for( count; count <=rear  ; count++ )
-    {
-         if( !dequeue( &x ))
-         {
-            break; //if false, break out of the loop
-         } 
 
-        in_buf[count++] = (uint8_t)x;
+PUBLIC void spi0_irq_handler() {
+    uint32_t status = spi_get_hw(spi0)->mis;
 
+    // Clear overrun / timeout at start
+    hw_clear_bits(&spi_get_hw(spi0)->icr, SPI_SSPICR_RTIC_BITS | SPI_SSPICR_RORIC_BITS);
+
+    while (spi_is_readable(spi0)) {
+        uint32_t word = spi_get_hw(spi0)->dr & SPI_SSPDR_DATA_BITS;
+        enqueue(word);  // quick, non-blocking
     }
-
-    set_queue_empty();
-   
-
-   // comment for no reason
 }
 
+PUBLIC bool spi_is_processing() {
 
+    return(spi_is_busy(spi0));
 
-
-PRIVATE void irq_handler(void) {
-    // Keep reading SPI data while there’s something available
-    while (spi_get_hw(spi0)->sr & ( SPI_SSPSR_RNE_BITS )) { // SPI Fifo not empty
-       // uint16_t word = *spi_data_reg & 0xFFFF;
-        uint16_t word = spi_get_hw(spi0)->dr & SPI_SSPDR_DATA_BITS;
-
-       if (!queue_is_full()) {
-            enqueue(word);
-        }
-     }
-       spi_get_hw(spi0)->icr =  SPI_SSPICR_RTIC_BITS | SPI_SSPICR_RORIC_BITS;
-       spi_reading = false;
-       spi_rx_len = BUF_LEN;
+    // if 1 still busy , if 0 its done transmitting
 
 }
-    
-
-
-
-
-PRIVATE void convert_hex_to_string(const uint8_t *byte_array, int length, char *conversion)
-{
-    uint8_t x = 0;
-
-    while (x < length)
-    {
-        conversion[x] = (char)byte_array[x];
-        x++;
-    }
-    
-    conversion[x] = '\0';   
-}
-
-
-
-
 
