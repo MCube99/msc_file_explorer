@@ -541,7 +541,7 @@ PICO_RP2040:INTERNAL=1
 PICO_RP2350:INTERNAL=0
 //Enable build of SDK tests
 PICO_SDK_TESTS_ENABLED:INTERNAL=
-PICO_TOOLCHAIN_PATH:INTERNAL=C:\Users\mmadha/.pico-sdk/toolchain/14_2_Rel1
+PICO_TOOLCHAIN_PATH:INTERNAL=C:/Program Files (x86)/GNU Arm Embedded Toolchain/10 2021.10/bin
 PICO_TOOLS_DIR:INTERNAL=C:/Users/mmadha/.pico-sdk/sdk/2.2.0/tools
 //Compiler reason failure
 _Python3_Compiler_REASON_FAILURE:INTERNAL=

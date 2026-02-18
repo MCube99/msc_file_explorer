@@ -1887,7 +1887,7 @@
 				}
 			],
 			"type" : "INTERNAL",
-			"value" : "C:\\Users\\mmadha/.pico-sdk/toolchain/14_2_Rel1"
+			"value" : "C:/Program Files (x86)/GNU Arm Embedded Toolchain/10 2021.10/bin"
 		},
 		{
 			"name" : "PICO_TOOLS_DIR",
