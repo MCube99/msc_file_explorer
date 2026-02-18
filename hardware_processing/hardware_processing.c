@@ -40,7 +40,8 @@
 #define PICO_DEFAULT_SPI_RX_PIN             4
 #define PICO_DEFAULT_SPI_TX_PIN             3
 #define PICO_DEFAULT_SPI_CSN_PIN            5    
-#define DEBUG_PIN                         6
+#define DEBUG_PIN                            6
+#define EVT_SPI_0_RX                        1
 
 //#define PICO_DEFAULT_SPI_SCK_PIN            2   // SPI clock, same as master
 //#define PICO_DEFAULT_SPI_RX_PIN             0   // MOSI from master → receive on slave
@@ -70,26 +71,25 @@ PUBLIC void prepare_memory_for_spi_transfer(uint8_t *in_buf) {
 
  PUBLIC void copy_queue_buffer(void)
 {
-    uint16_t x = 0;
+    int x = 0;
+    static unsigned int count = 0;
 
-    gpio_set_irq_active(DEBUG_PIN,
-                        GPIO_IRQ_EDGE_FALL | GPIO_IRQ_EDGE_RISE,
-                        false);
+    // gpio_set_irq_active(DEBUG_PIN,
+    //                     GPIO_IRQ_EDGE_FALL | GPIO_IRQ_EDGE_RISE,
+    //                     false);
 
-    while (dequeue(&x))
-    {
-        unsigned int count = append_char(x);
-
-        if (count == 0)
-        {
-            set_queue_empty();
-        }
+    x = GetNextByte();
+     if (x == 256)
+     {
+        set_queue_empty();
+      }
     }
 
-    gpio_set_irq_active(DEBUG_PIN,
-                        GPIO_IRQ_EDGE_FALL | GPIO_IRQ_EDGE_RISE,
-                        true);
-}
+//     gpio_set_irq_active(DEBUG_PIN,
+//                         GPIO_IRQ_EDGE_FALL | GPIO_IRQ_EDGE_RISE,
+//                         true);
+ 
+
 
 
 PRIVATE void gpio_clear_events(uint gpio, uint32_t events) {
@@ -98,13 +98,15 @@ PRIVATE void gpio_clear_events(uint gpio, uint32_t events) {
 
 
 PRIVATE void myIRQHandler(uint gpio, uint32_t events) {
+    uint16_t test[256] = {0};
     if( events & GPIO_IRQ_EDGE_FALL  )
     {
-        spi0_irq_handler();
-        if(!spi_is_processing())
+        while(spi_is_busy(spi0))
         {
-            csn_high = true;
+             csn_high = true;
         }
+       
+    
         spi_reading = false;    //reading is done 
     }
 
@@ -132,17 +134,20 @@ PUBLIC void set_gpio_pins() {
 
 PUBLIC void set_spi_gpio_pins() {
 
-    spi_init(spi_default,  1000 * 1000); // 1 MHz
+    spi_init(spi0,  0); 
+    spi_set_slave(spi0, true);
 
     spi_set_format(
     spi0,
-    16,                    // bits
+    8,                    // bits
     SPI_CPOL_0,
     SPI_CPHA_0,
     SPI_LSB_FIRST
     );
 
-    spi_set_slave(spi_default, true);
+    spi_set_slave(spi0, true);
+
+
     gpio_set_function(PICO_DEFAULT_SPI_RX_PIN, GPIO_FUNC_SPI);
     gpio_set_function(PICO_DEFAULT_SPI_SCK_PIN, GPIO_FUNC_SPI);
     gpio_set_function(PICO_DEFAULT_SPI_TX_PIN, GPIO_FUNC_SPI);
@@ -172,30 +177,64 @@ PUBLIC void gpio_set_irq_active(uint gpio, uint32_t events, bool enabled) {
 
 PUBLIC bool spi_irq_setup_init(void)
 {
-     hw_set_bits(&spi_get_hw(spi0)->icr, SPI_SSPICR_RTIC_BITS | SPI_SSPICR_RORIC_BITS);
+    
+    spi_get_hw(spi0)->imsc = 0;
 
-    // Clear interrupt mask
-    hw_clear_bits(&spi_get_hw(spi0)->imsc, SPI_SSPIMSC_BITS);
 
-    // Enable desired SPI interrupt sources
-    hw_set_bits(&spi_get_hw(spi0)->imsc,
-                SPI_SSPIMSC_RTIM_BITS | SPI_SSPIMSC_RXIM_BITS | SPI_SSPIMSC_RORIM_BITS);
+    spi_get_hw(spi0)->icr = SPI_SSPICR_RTIC_BITS | SPI_SSPICR_RORIC_BITS;
+
+
+    irq_set_exclusive_handler(SPI0_IRQ, spi0_irq_handler);
+    irq_set_priority(SPI0_IRQ,0);
+
+    irq_set_enabled(SPI0_IRQ, true);
+
+
+    spi_get_hw(spi0)->imsc =
+        SPI_SSPIMSC_RTIM_BITS |
+        SPI_SSPIMSC_RXIM_BITS |
+        SPI_SSPIMSC_RORIM_BITS;
+
+    return true;
 }
 
 
 
 
-PUBLIC void spi0_irq_handler() {
-    uint32_t status = spi_get_hw(spi0)->mis;
 
-    // Clear overrun / timeout at start
-    hw_clear_bits(&spi_get_hw(spi0)->icr, SPI_SSPICR_RTIC_BITS | SPI_SSPICR_RORIC_BITS);
 
-    while (spi_is_readable(spi0)) {
-        uint32_t word = spi_get_hw(spi0)->dr & SPI_SSPDR_DATA_BITS;
-        enqueue(word);  // quick, non-blocking
+PUBLIC void spi0_irq_handler(void)
+{
+    uint32_t status;
+     uint32_t word;
+
+   
+
+    while ((status = spi_get_hw(spi0)->mis) &
+           (SPI_SSPMIS_RXMIS_BITS |
+            SPI_SSPMIS_RTMIS_BITS |
+            SPI_SSPMIS_RORMIS_BITS))
+    {
+        // Drain RX FIFO
+        if (spi_is_readable(spi0))
+        {
+            word = spi_get_hw(spi0)->dr;
+         //   uint16_t word = spi_get_hw(spi0)->dr & SPI_SSPDR_DATA_BITS;
+             enqueue(word); 
+            csn_high = true;
+        }
+
+        // Clear timeout + overrun
+        spi_get_hw(spi0)->icr =
+            SPI_SSPICR_RTIC_BITS |
+            SPI_SSPICR_RORIC_BITS;
     }
+
+    csn_high = false;
 }
+
+
+
 
 PUBLIC bool spi_is_processing() {
 

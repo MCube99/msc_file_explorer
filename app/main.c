@@ -102,7 +102,7 @@ int main(void) {
 
   board_init();
   set_spi_gpio_pins();
-  set_gpio_pins();
+  // set_gpio_pins();
   spi_irq_setup_init();
   prepare_memory_for_spi_transfer(in_buf);
 
@@ -154,10 +154,10 @@ int main(void) {
        continue; //if csn is still high, meaning reading is still happening, so continue
     }
 
-    if(queue_is_empty())
-    {
-       file_processing_main();
-    }
+//     if(queue_is_empty())
+//     {
+//        file_processing_main();
+//     }
     
    
      

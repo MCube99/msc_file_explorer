@@ -338,7 +338,7 @@ static void add_subdirectory() //need to get date time stamp and stuff and use t
 
 
 
-PUBLIC unsigned int append_char(uint16_t byte)
+PUBLIC unsigned int append_char(uint32_t byte)
 {
     static unsigned int i = 0;
 

@@ -9,7 +9,7 @@
 #define PRIVATE static
 #define PUBLIC  extern  
 
-#define BUF_LEN                 0x100  // 256 bytes
+#define BUF_LEN                  256
 #define NUMBER_OF_BYTES         BUF_LEN 
 
 typedef uint8_t  BYTE;

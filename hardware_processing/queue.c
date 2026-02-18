@@ -2,12 +2,13 @@
 #include <stdlib.h>
 #include "queue.h"
 #include <string.h>
+#include "hardware/sync.h"
 
 
 struct queue_type {
     volatile unsigned int front;          // read index
     volatile unsigned int rear;           // write index
-    BYTE buffer[ BUF_LEN ];
+    DWORD buffer[ BUF_LEN ];
 }; 
 
 static struct queue_type myQueue;
@@ -19,13 +20,14 @@ static struct queue_type myQueue;
 PUBLIC void queue_init( ) {
     myQueue.front = 0;                // start read index at 0
     myQueue.rear = 0;                 // start write index at 0
+
     memset(myQueue.buffer, 0, BUF_LEN); // initialize all buffer elements to 0
 }
 
 
 
 
-PUBLIC bool enqueue( uint16_t x ) {
+PUBLIC bool enqueue( uint32_t x ) {
 
     if((myQueue.rear + 1) % BUF_LEN == myQueue.front ) { //loops back to start if at end
         return false; // buffer full
@@ -42,7 +44,7 @@ PUBLIC bool enqueue( uint16_t x ) {
 
 
 
-PUBLIC bool dequeue( uint16_t *x ) {
+PUBLIC bool dequeue( uint32_t *x ) {
     if ( myQueue.front == myQueue.rear ) {
         return false; // buffer empty
     }
@@ -69,8 +71,11 @@ PUBLIC bool set_queue_empty() {
 }
 
 PUBLIC bool queue_is_full() {
-    return ((myQueue.rear + 1) % BUF_LEN == myQueue.front); //should wrap around after BUF_LEN to back to 0
-
+    bool is_queue_full;
+    uint32_t status = save_and_disable_interrupts();
+    is_queue_full = (myQueue.rear + 1) % BUF_LEN == myQueue.front; //should wrap around after BUF_LEN to back to 0
+    restore_interrupts(status );
+    return(is_queue_full);
 }
 
 PUBLIC bool queue_is_empty(void)
@@ -78,19 +83,32 @@ PUBLIC bool queue_is_empty(void)
     return (myQueue.front == myQueue.rear);
 }
 
-PUBLIC BYTE* return_buffer()
+
+
+
+PUBLIC int GetBytesAvailable()
 {
-    return( myQueue.buffer );
+    int result;
+    uint32_t status = save_and_disable_interrupts();
+    result = myQueue.rear - myQueue.front;
+    restore_interrupts(status);
+    if(result < 0) {
+        result+= BUF_LEN;
+    }
+    return(result);
 }
 
-PUBLIC int return_front()
+PUBLIC int GetNextByte()
 {
-    return(myQueue.front);
-}
-
-PUBLIC int return_rear()
-{
-    return(myQueue.rear);
+    int result = -1;
+    uint32_t status = save_and_disable_interrupts();
+    if(myQueue.front != myQueue.rear)
+    {
+        result = myQueue.buffer[myQueue.front++];
+        myQueue.front%=BUF_LEN;
+    }
+    restore_interrupts(status);
+    return result;
 }
 
 // End of queue.c file
