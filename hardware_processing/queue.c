@@ -6,8 +6,8 @@
 
 
 struct queue_type {
-    volatile unsigned int front;          // read index
-    volatile unsigned int rear;           // write index
+    volatile uint16_t front;          // read index
+    volatile uint16_t rear;           // write index
     DWORD buffer[ BUF_LEN ];
 }; 
 
@@ -45,6 +45,8 @@ PUBLIC bool enqueue( uint32_t x ) {
 
 
 PUBLIC bool dequeue( uint32_t *x ) {
+
+    
     if ( myQueue.front == myQueue.rear ) {
         return false; // buffer empty
     }
@@ -80,7 +82,11 @@ PUBLIC bool queue_is_full() {
 
 PUBLIC bool queue_is_empty(void)
 {
-    return (myQueue.front == myQueue.rear);
+    bool empty_queue;
+    uint32_t status = save_and_disable_interrupts();
+    empty_queue = myQueue.front == myQueue.rear;
+    restore_interrupts(status);
+    return (empty_queue );
 }
 
 

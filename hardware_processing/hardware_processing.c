@@ -34,14 +34,29 @@
 #include "hardware/sync.h"
 #include "pico/time.h"
 #include "hardware/structs/iobank0.h"
+#include "clocked_input.pio.h"
 
 #define spi_default                         spi0
 #define PICO_DEFAULT_SPI_SCK_PIN            2   // SPI clock, same as master
 #define PICO_DEFAULT_SPI_RX_PIN             4
 #define PICO_DEFAULT_SPI_TX_PIN             3
 #define PICO_DEFAULT_SPI_CSN_PIN            5    
-#define DEBUG_PIN                            6
-#define EVT_SPI_0_RX                        1
+#define DEBUG_PIN                           6
+
+typedef struct pio_spi_inst {
+    PIO pio;
+    uint sm;
+    uint cs_pin;
+    uint offset;
+} pio_spi_inst_t;
+
+static pio_spi_inst_t pio_spi = {
+    .pio = pio0,
+    .sm = 0,
+    .cs_pin = PICO_DEFAULT_SPI_CSN_PIN
+};
+
+
 
 //#define PICO_DEFAULT_SPI_SCK_PIN            2   // SPI clock, same as master
 //#define PICO_DEFAULT_SPI_RX_PIN             0   // MOSI from master → receive on slave
@@ -51,8 +66,8 @@
 
 
 
-PRIVATE void convert_hex_to_string(const uint8_t *byte_array, int length, char *conversion);
-PRIVATE void myIRQHandler(uint gpio, uint32_t events);
+
+PRIVATE void myIRQHandler();
 
 
 
@@ -82,56 +97,14 @@ PUBLIC void prepare_memory_for_spi_transfer(uint8_t *in_buf) {
      if (x == 256)
      {
         set_queue_empty();
-      }
+     }
+
     }
 
 //     gpio_set_irq_active(DEBUG_PIN,
 //                         GPIO_IRQ_EDGE_FALL | GPIO_IRQ_EDGE_RISE,
 //                         true);
  
-
-
-
-PRIVATE void gpio_clear_events(uint gpio, uint32_t events) {
-    gpio_acknowledge_irq(gpio,events);
-}
-
-
-PRIVATE void myIRQHandler(uint gpio, uint32_t events) {
-    uint16_t test[256] = {0};
-    if( events & GPIO_IRQ_EDGE_FALL  )
-    {
-        while(spi_is_busy(spi0))
-        {
-             csn_high = true;
-        }
-       
-    
-        spi_reading = false;    //reading is done 
-    }
-
-    if( events & GPIO_IRQ_EDGE_RISE)
-    {
-        csn_high = false;
-        spi_reading = true; 
-    }
-
-      gpio_clear_events(gpio,events);
-}
-
-PUBLIC void set_gpio_pins() {
-    
-
-    gpio_set_function(DEBUG_PIN, GPIO_FUNC_SIO);
-    gpio_set_dir(DEBUG_PIN, GPIO_IN);
-    gpio_set_input_enabled(DEBUG_PIN, true); // interrupt line needs to detect input
-    gpio_pull_up(DEBUG_PIN);
-   
-    gpio_set_irq_enabled_with_callback(DEBUG_PIN, GPIO_IRQ_EDGE_FALL|GPIO_IRQ_EDGE_RISE, true, &myIRQHandler);
-
-
-}
-
 PUBLIC void set_spi_gpio_pins() {
 
     spi_init(spi0,  0); 
@@ -147,7 +120,6 @@ PUBLIC void set_spi_gpio_pins() {
 
     spi_set_slave(spi0, true);
 
-
     gpio_set_function(PICO_DEFAULT_SPI_RX_PIN, GPIO_FUNC_SPI);
     gpio_set_function(PICO_DEFAULT_SPI_SCK_PIN, GPIO_FUNC_SPI);
     gpio_set_function(PICO_DEFAULT_SPI_TX_PIN, GPIO_FUNC_SPI);
@@ -157,90 +129,57 @@ PUBLIC void set_spi_gpio_pins() {
 }
 
 
-
-
-PUBLIC void gpio_set_irq_active(uint gpio, uint32_t events, bool enabled) {
-    io_bank0_irq_ctrl_hw_t *irq_ctrl_base = get_core_num() ? &io_bank0_hw->proc1_irq_ctrl : &io_bank0_hw->proc0_irq_ctrl;
-    io_rw_32 *en_reg = &irq_ctrl_base-> inte[gpio/8];
-    events<<= 4 * (gpio%8);
-    if(enabled)
-    {
-        hw_set_bits(en_reg,events);
-    }
-    else
-    {
-        hw_clear_bits(en_reg, events);
-    }
-}
-
-
-
 PUBLIC bool spi_irq_setup_init(void)
 {
     
-    spi_get_hw(spi0)->imsc = 0;
-
+    
 
     spi_get_hw(spi0)->icr = SPI_SSPICR_RTIC_BITS | SPI_SSPICR_RORIC_BITS;
-
-
-    irq_set_exclusive_handler(SPI0_IRQ, spi0_irq_handler);
-    irq_set_priority(SPI0_IRQ,0);
-
-    irq_set_enabled(SPI0_IRQ, true);
-
-
     spi_get_hw(spi0)->imsc =
-        SPI_SSPIMSC_RTIM_BITS |
-        SPI_SSPIMSC_RXIM_BITS |
-        SPI_SSPIMSC_RORIM_BITS;
+        SPI_SSPIMSC_RXIM_BITS; 
 
     return true;
 }
 
 
 
-
-
-
-PUBLIC void spi0_irq_handler(void)
+PUBLIC void setupPIO(void)
 {
-    uint32_t status;
+     spi_get_hw(spi0)->icr = SPI_SSPICR_RTIC_BITS | SPI_SSPICR_RORIC_BITS;
+    spi_get_hw(spi0)->imsc =
+        SPI_SSPIMSC_RXIM_BITS;
+
+    uint offset = pio_add_program(pio_spi.pio, &clocked_input_program);
+    uint sm = pio_claim_unused_sm(pio_spi.pio, true);
+    clocked_input_program_init(pio_spi.pio, sm, offset,PICO_DEFAULT_SPI_RX_PIN);
+   // Setup PIO interrupt handling for clocked input
+    pio_set_irq0_source_mask_enabled(pio_spi.pio, pis_interrupt0|pis_sm0_rx_fifo_not_empty|pis_sm1_rx_fifo_not_empty|pis_sm2_rx_fifo_not_empty|pis_sm3_rx_fifo_not_empty, true);
+    irq_set_exclusive_handler(PIO0_IRQ_0, myIRQHandler);
+    irq_set_priority(PIO0_IRQ_0, 1);
+    irq_set_enabled(PIO0_IRQ_0, true);
+}
+
+PRIVATE void myIRQHandler()
+{
+     uint32_t status;
      uint32_t word;
+ 
+    // while ((spi_is_readable(spi0)))
+    // {
+    //         word = pio_sm_get(pio_spi.pio, pio_spi.sm); // Read data from PIO state machine FIFO
+    //         enqueue(word); 
+    //         spi_reading = true;
+    // }
 
-   
+        
+            word = pio_sm_get(pio_spi.pio, pio_spi.sm); // Read data from PIO state machine FIFO
+            enqueue(word); 
 
-    while ((status = spi_get_hw(spi0)->mis) &
-           (SPI_SSPMIS_RXMIS_BITS |
-            SPI_SSPMIS_RTMIS_BITS |
-            SPI_SSPMIS_RORMIS_BITS))
-    {
-        // Drain RX FIFO
-        if (spi_is_readable(spi0))
-        {
-            word = spi_get_hw(spi0)->dr;
-         //   uint16_t word = spi_get_hw(spi0)->dr & SPI_SSPDR_DATA_BITS;
-             enqueue(word); 
-            csn_high = true;
-        }
-
-        // Clear timeout + overrun
-        spi_get_hw(spi0)->icr =
-            SPI_SSPICR_RTIC_BITS |
-            SPI_SSPICR_RORIC_BITS;
-    }
-
-    csn_high = false;
-}
+            if(!queue_is_full())
+            {
+                spi_reading = false;
+            }
 
 
-
-
-PUBLIC bool spi_is_processing() {
-
-    return(spi_is_busy(spi0));
-
-    // if 1 still busy , if 0 its done transmitting
 
 }
-

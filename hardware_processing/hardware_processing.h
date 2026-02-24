@@ -24,6 +24,7 @@ PUBLIC void gpio_set_irq_active(uint gpio, uint32_t events, bool enabled);
 PUBLIC void spi0_irq_handler();
  PUBLIC void copy_queue_buffer( void );
 PUBLIC bool spi_is_processing();
+PUBLIC void setupPIO(void);
 
 extern volatile bool spi_reading;
 extern volatile bool csn_high;

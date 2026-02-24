@@ -101,9 +101,10 @@ int main(void) {
 
 
   board_init();
-  set_spi_gpio_pins();
-  // set_gpio_pins();
-  spi_irq_setup_init();
+//   set_spi_gpio_pins();
+//   spi_irq_setup_init(); 
+ //  set_gpio_pins();
+   setupPIO();
   prepare_memory_for_spi_transfer(in_buf);
 
   
@@ -145,7 +146,7 @@ int main(void) {
     led_blinking_task();
     
 
-    if(!csn_high) // the reading depends when the button is pressed, so when it goes high. This nots it
+    if(!spi_reading) // the reading depends when the button is pressed, so when it goes high. This nots it
     {
        copy_queue_buffer(); // 
     }
@@ -154,10 +155,10 @@ int main(void) {
        continue; //if csn is still high, meaning reading is still happening, so continue
     }
 
-//     if(queue_is_empty())
-//     {
-//        file_processing_main();
-//     }
+    if(queue_is_empty())
+    {
+       file_processing_main();
+    }
     
    
      
