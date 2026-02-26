@@ -75,7 +75,7 @@
  // 
 
  
-volatile bool spi_reading = true; // flag to inidcate whether or not the
+
 volatile bool csn_high = true;
 
 //--------------------------------------------------------------------+
@@ -101,10 +101,9 @@ int main(void) {
 
 
   board_init();
-//   set_spi_gpio_pins();
-//   spi_irq_setup_init(); 
- //  set_gpio_pins();
-   setupPIO();
+  setupPIO();
+  //set_gpio_pins(); //arent strict;y doing spi so no need to wait for csn
+   
   prepare_memory_for_spi_transfer(in_buf);
 
   
@@ -146,7 +145,7 @@ int main(void) {
     led_blinking_task();
     
 
-    if(!spi_reading) // the reading depends when the button is pressed, so when it goes high. This nots it
+    if(!csn_high) // the reading depends when the button is pressed, so when it goes high. This nots it
     {
        copy_queue_buffer(); // 
     }

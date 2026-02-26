@@ -778,11 +778,15 @@
 			"properties" : 
 			[
 				{
+					"name" : "ADVANCED",
+					"value" : "1"
+				},
+				{
 					"name" : "HELPSTRING",
-					"value" : "No help, variable specified on the command line."
+					"value" : "Program used to build from build.ninja files."
 				}
 			],
-			"type" : "UNINITIALIZED",
+			"type" : "FILEPATH",
 			"value" : "C:/Users/mmadha/ninja-win/ninja.exe"
 		},
 		{
@@ -1887,7 +1891,7 @@
 				}
 			],
 			"type" : "INTERNAL",
-			"value" : "C:/Program Files (x86)/GNU Arm Embedded Toolchain/10 2021.10/bin"
+			"value" : "C:\\Users\\mmadha/.pico-sdk/toolchain/14_2_Rel1"
 		},
 		{
 			"name" : "PICO_TOOLS_DIR",

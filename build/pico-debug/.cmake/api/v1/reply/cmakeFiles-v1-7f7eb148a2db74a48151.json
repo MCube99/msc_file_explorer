@@ -80,6 +80,11 @@
 		{
 			"isCMake" : true,
 			"isExternal" : true,
+			"path" : "C:/Users/mmadha/.pico-sdk/cmake/v3.31.5/share/cmake-3.31/Modules/CMakeNinjaFindMake.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
 			"path" : "C:/Users/mmadha/.pico-sdk/cmake/v3.31.5/share/cmake-3.31/Modules/CMakeSystemSpecificInitialize.cmake"
 		},
 		{

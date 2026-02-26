@@ -8,7 +8,7 @@
 struct queue_type {
     volatile uint16_t front;          // read index
     volatile uint16_t rear;           // write index
-    DWORD buffer[ BUF_LEN ];
+    BYTE buffer[ BUF_LEN ];
 }; 
 
 static struct queue_type myQueue;
