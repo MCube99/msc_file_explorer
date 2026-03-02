@@ -18,8 +18,8 @@
 
 static const uint16_t clocked_input_program_instructions[] = {
             //     .wrap_target
-    0x2021, //  0: wait   0 pin, 1
-    0x20a1, //  1: wait   1 pin, 1
+    0x20a1, //  0: wait   1 pin, 1
+    0x2021, //  1: wait   0 pin, 1
     0x4001, //  2: in     pins, 1
             //     .wrap
 };
@@ -41,7 +41,7 @@ static inline pio_sm_config clocked_input_program_get_default_config(uint offset
     return c;
 }
 
-static inline void clocked_input_program_init(PIO pio, uint sm, uint offset, uint pin) {
+static inline void clocked_input_program_init(PIO pio, uint sm, uint offset, uint pin, float clk_div) {
     pio_sm_config c = clocked_input_program_get_default_config(offset);
     // Set the IN base pin to the provided `pin` parameter. This is the data
     // pin, and the next-numbered GPIO is used as the clock pin.
@@ -60,6 +60,7 @@ static inline void clocked_input_program_init(PIO pio, uint sm, uint offset, uin
     );
     // We only receive, so disable the TX FIFO to make the RX FIFO deeper.
     sm_config_set_fifo_join(&c, PIO_FIFO_JOIN_RX);
+    sm_config_set_clkdiv(&c, clk_div); 
     // Load our configuration, and start the program from the beginning
     pio_sm_init(pio, sm, offset, &c);
     pio_sm_set_enabled(pio, sm, true);

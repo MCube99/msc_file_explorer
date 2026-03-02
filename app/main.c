@@ -101,10 +101,10 @@ int main(void) {
 
 
   board_init();
-  setupPIO();
+  queue_init();
+  dma_setup();
   //set_gpio_pins(); //arent strict;y doing spi so no need to wait for csn
    
-  prepare_memory_for_spi_transfer(in_buf);
 
   
 

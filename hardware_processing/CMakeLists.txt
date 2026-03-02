@@ -13,7 +13,7 @@ target_include_directories(hardware_processing
 )
 
 
-target_link_libraries(hardware_processing PRIVATE hardware_spi hardware_irq hardware_sync hardware_gpio hardware_pio  PUBLIC fatfs_lib  )
+target_link_libraries(hardware_processing PRIVATE hardware_spi hardware_irq hardware_sync hardware_gpio hardware_pio hardware_dma PUBLIC fatfs_lib  )
  
 
 # add_library(string_processing spi_processing.c hardware_processing.h)

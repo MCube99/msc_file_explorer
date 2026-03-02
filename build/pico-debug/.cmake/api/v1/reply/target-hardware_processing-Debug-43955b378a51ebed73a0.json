@@ -3,7 +3,7 @@
 	"artifacts" : 
 	[
 		{
-			"path" : "file_processing/libfile_processing.a"
+			"path" : "hardware_processing/libhardware_processing.a"
 		}
 	],
 	"backtrace" : 1,
@@ -13,12 +13,15 @@
 		[
 			"add_library",
 			"target_link_libraries",
+			"add_dependencies",
+			"pico_generate_pio_header",
 			"include_directories",
-			"target_sources"
+			"target_include_directories"
 		],
 		"files" : 
 		[
-			"file_processing/CMakeLists.txt",
+			"hardware_processing/CMakeLists.txt",
+			"C:/Users/mmadha/.pico-sdk/sdk/2.2.0/tools/CMakeLists.txt",
 			"CMakeLists.txt"
 		],
 		"nodes" : 
@@ -29,28 +32,46 @@
 			{
 				"command" : 0,
 				"file" : 0,
-				"line" : 3,
+				"line" : 6,
 				"parent" : 0
 			},
 			{
 				"command" : 1,
 				"file" : 0,
-				"line" : 22,
+				"line" : 16,
 				"parent" : 0
-			},
-			{
-				"file" : 1
-			},
-			{
-				"command" : 2,
-				"file" : 1,
-				"line" : 152,
-				"parent" : 3
 			},
 			{
 				"command" : 3,
 				"file" : 0,
-				"line" : 8,
+				"line" : 7,
+				"parent" : 0
+			},
+			{
+				"command" : 2,
+				"file" : 1,
+				"line" : 267,
+				"parent" : 3
+			},
+			{
+				"file" : 2
+			},
+			{
+				"command" : 4,
+				"file" : 2,
+				"line" : 152,
+				"parent" : 5
+			},
+			{
+				"command" : 5,
+				"file" : 1,
+				"line" : 274,
+				"parent" : 3
+			},
+			{
+				"command" : 5,
+				"file" : 0,
+				"line" : 9,
 				"parent" : 0
 			}
 		]
@@ -314,32 +335,32 @@
 			"includes" : 
 			[
 				{
-					"backtrace" : 4,
+					"backtrace" : 6,
 					"path" : "C:/Users/mmadha/OneDrive - Transformers and Rectifiers Ltd/Desktop/bare_api/msc_file_explorer/tusb_config"
 				},
 				{
-					"backtrace" : 5,
+					"backtrace" : 7,
+					"path" : "C:/Users/mmadha/OneDrive - Transformers and Rectifiers Ltd/Desktop/bare_api/msc_file_explorer/build/pico-debug/hardware_processing"
+				},
+				{
+					"backtrace" : 8,
 					"path" : "C:/Users/mmadha/OneDrive - Transformers and Rectifiers Ltd/Desktop/bare_api/msc_file_explorer/hardware_processing"
 				},
 				{
-					"backtrace" : 5,
-					"path" : "C:/Users/mmadha/OneDrive - Transformers and Rectifiers Ltd/Desktop/bare_api/msc_file_explorer/fatfs"
-				},
-				{
-					"backtrace" : 5,
+					"backtrace" : 8,
 					"path" : "C:/Users/mmadha/OneDrive - Transformers and Rectifiers Ltd/Desktop/bare_api/msc_file_explorer/file_processing"
 				},
 				{
 					"backtrace" : 2,
-					"path" : "C:/Users/mmadha/OneDrive - Transformers and Rectifiers Ltd/Desktop/bare_api/msc_file_explorer/build/pico-debug/hardware_processing"
+					"path" : "C:/Users/mmadha/.pico-sdk/sdk/2.2.0/src/rp2_common/pico_atomic/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/mmadha/OneDrive - Transformers and Rectifiers Ltd/Desktop/bare_api/msc_file_explorer/fatfs"
 				},
 				{
 					"backtrace" : 2,
 					"path" : "H:/tinyusb/src"
-				},
-				{
-					"backtrace" : 2,
-					"path" : "C:/Users/mmadha/.pico-sdk/sdk/2.2.0/src/rp2_common/pico_atomic/include"
 				},
 				{
 					"backtrace" : 2,
@@ -356,17 +377,7 @@
 				{
 					"backtrace" : 2,
 					"isSystem" : true,
-					"path" : "C:/Users/mmadha/.pico-sdk/sdk/2.2.0/src/rp2040/hardware_structs/include"
-				},
-				{
-					"backtrace" : 2,
-					"isSystem" : true,
-					"path" : "C:/Users/mmadha/.pico-sdk/sdk/2.2.0/src/rp2040/hardware_regs/include"
-				},
-				{
-					"backtrace" : 2,
-					"isSystem" : true,
-					"path" : "C:/Users/mmadha/.pico-sdk/sdk/2.2.0/src/rp2_common/hardware_base/include"
+					"path" : "C:/Users/mmadha/.pico-sdk/sdk/2.2.0/src/rp2_common/hardware_spi/include"
 				},
 				{
 					"backtrace" : 2,
@@ -391,6 +402,16 @@
 				{
 					"backtrace" : 2,
 					"isSystem" : true,
+					"path" : "C:/Users/mmadha/.pico-sdk/sdk/2.2.0/src/rp2040/hardware_regs/include"
+				},
+				{
+					"backtrace" : 2,
+					"isSystem" : true,
+					"path" : "C:/Users/mmadha/.pico-sdk/sdk/2.2.0/src/rp2_common/hardware_base/include"
+				},
+				{
+					"backtrace" : 2,
+					"isSystem" : true,
 					"path" : "C:/Users/mmadha/.pico-sdk/sdk/2.2.0/src/rp2_common/pico_platform_common/include"
 				},
 				{
@@ -411,7 +432,7 @@
 				{
 					"backtrace" : 2,
 					"isSystem" : true,
-					"path" : "C:/Users/mmadha/.pico-sdk/sdk/2.2.0/src/rp2_common/hardware_irq/include"
+					"path" : "C:/Users/mmadha/.pico-sdk/sdk/2.2.0/src/rp2040/hardware_structs/include"
 				},
 				{
 					"backtrace" : 2,
@@ -431,32 +452,7 @@
 				{
 					"backtrace" : 2,
 					"isSystem" : true,
-					"path" : "C:/Users/mmadha/.pico-sdk/sdk/2.2.0/src/common/pico_sync/include"
-				},
-				{
-					"backtrace" : 2,
-					"isSystem" : true,
-					"path" : "C:/Users/mmadha/.pico-sdk/sdk/2.2.0/src/common/pico_time/include"
-				},
-				{
-					"backtrace" : 2,
-					"isSystem" : true,
-					"path" : "C:/Users/mmadha/.pico-sdk/sdk/2.2.0/src/rp2_common/hardware_timer/include"
-				},
-				{
-					"backtrace" : 2,
-					"isSystem" : true,
-					"path" : "C:/Users/mmadha/.pico-sdk/sdk/2.2.0/src/common/pico_util/include"
-				},
-				{
-					"backtrace" : 2,
-					"isSystem" : true,
-					"path" : "C:/Users/mmadha/.pico-sdk/sdk/2.2.0/src/rp2_common/pico_time_adapter/include"
-				},
-				{
-					"backtrace" : 2,
-					"isSystem" : true,
-					"path" : "C:/Users/mmadha/.pico-sdk/sdk/2.2.0/src/rp2_common/pico_runtime_init/include"
+					"path" : "C:/Users/mmadha/.pico-sdk/sdk/2.2.0/src/rp2_common/hardware_resets/include"
 				},
 				{
 					"backtrace" : 2,
@@ -471,7 +467,7 @@
 				{
 					"backtrace" : 2,
 					"isSystem" : true,
-					"path" : "C:/Users/mmadha/.pico-sdk/sdk/2.2.0/src/rp2_common/hardware_resets/include"
+					"path" : "C:/Users/mmadha/.pico-sdk/sdk/2.2.0/src/rp2_common/hardware_irq/include"
 				},
 				{
 					"backtrace" : 2,
@@ -521,7 +517,37 @@
 				{
 					"backtrace" : 2,
 					"isSystem" : true,
+					"path" : "C:/Users/mmadha/.pico-sdk/sdk/2.2.0/src/common/pico_time/include"
+				},
+				{
+					"backtrace" : 2,
+					"isSystem" : true,
+					"path" : "C:/Users/mmadha/.pico-sdk/sdk/2.2.0/src/rp2_common/hardware_timer/include"
+				},
+				{
+					"backtrace" : 2,
+					"isSystem" : true,
+					"path" : "C:/Users/mmadha/.pico-sdk/sdk/2.2.0/src/common/pico_sync/include"
+				},
+				{
+					"backtrace" : 2,
+					"isSystem" : true,
+					"path" : "C:/Users/mmadha/.pico-sdk/sdk/2.2.0/src/common/pico_util/include"
+				},
+				{
+					"backtrace" : 2,
+					"isSystem" : true,
+					"path" : "C:/Users/mmadha/.pico-sdk/sdk/2.2.0/src/rp2_common/pico_time_adapter/include"
+				},
+				{
+					"backtrace" : 2,
+					"isSystem" : true,
 					"path" : "C:/Users/mmadha/.pico-sdk/sdk/2.2.0/src/rp2_common/hardware_xosc/include"
+				},
+				{
+					"backtrace" : 2,
+					"isSystem" : true,
+					"path" : "C:/Users/mmadha/.pico-sdk/sdk/2.2.0/src/rp2_common/pico_runtime_init/include"
 				},
 				{
 					"backtrace" : 2,
@@ -576,6 +602,26 @@
 				{
 					"backtrace" : 2,
 					"isSystem" : true,
+					"path" : "C:/Users/mmadha/.pico-sdk/sdk/2.2.0/src/rp2_common/pico_multicore/include"
+				},
+				{
+					"backtrace" : 2,
+					"isSystem" : true,
+					"path" : "C:/Users/mmadha/.pico-sdk/sdk/2.2.0/src/common/boot_picobin_headers/include"
+				},
+				{
+					"backtrace" : 2,
+					"isSystem" : true,
+					"path" : "C:/Users/mmadha/.pico-sdk/sdk/2.2.0/src/rp2_common/hardware_pio/include"
+				},
+				{
+					"backtrace" : 2,
+					"isSystem" : true,
+					"path" : "C:/Users/mmadha/.pico-sdk/sdk/2.2.0/src/rp2_common/hardware_dma/include"
+				},
+				{
+					"backtrace" : 2,
+					"isSystem" : true,
 					"path" : "C:/Users/mmadha/.pico-sdk/sdk/2.2.0/src/rp2_common/pico_unique_id/include"
 				},
 				{
@@ -587,16 +633,6 @@
 					"backtrace" : 2,
 					"isSystem" : true,
 					"path" : "C:/Users/mmadha/.pico-sdk/sdk/2.2.0/src/rp2_common/hardware_xip_cache/include"
-				},
-				{
-					"backtrace" : 2,
-					"isSystem" : true,
-					"path" : "C:/Users/mmadha/.pico-sdk/sdk/2.2.0/src/rp2_common/pico_multicore/include"
-				},
-				{
-					"backtrace" : 2,
-					"isSystem" : true,
-					"path" : "C:/Users/mmadha/.pico-sdk/sdk/2.2.0/src/common/boot_picobin_headers/include"
 				},
 				{
 					"backtrace" : 2,
@@ -652,7 +688,7 @@
 				9,
 				10,
 				11,
-				12,
+				13,
 				14,
 				15,
 				16,
@@ -686,21 +722,25 @@
 				44,
 				45,
 				46,
+				47,
 				48,
 				49,
 				50,
-				51,
+				52,
+				53,
+				54,
 				55,
-				56,
+				59,
 				60,
-				61,
-				63,
+				64,
 				65,
 				67,
-				68,
-				70,
+				69,
 				71,
-				72
+				72,
+				74,
+				75,
+				76
 			]
 		},
 		{
@@ -960,32 +1000,32 @@
 			"includes" : 
 			[
 				{
-					"backtrace" : 4,
+					"backtrace" : 6,
 					"path" : "C:/Users/mmadha/OneDrive - Transformers and Rectifiers Ltd/Desktop/bare_api/msc_file_explorer/tusb_config"
 				},
 				{
-					"backtrace" : 5,
+					"backtrace" : 7,
+					"path" : "C:/Users/mmadha/OneDrive - Transformers and Rectifiers Ltd/Desktop/bare_api/msc_file_explorer/build/pico-debug/hardware_processing"
+				},
+				{
+					"backtrace" : 8,
 					"path" : "C:/Users/mmadha/OneDrive - Transformers and Rectifiers Ltd/Desktop/bare_api/msc_file_explorer/hardware_processing"
 				},
 				{
-					"backtrace" : 5,
-					"path" : "C:/Users/mmadha/OneDrive - Transformers and Rectifiers Ltd/Desktop/bare_api/msc_file_explorer/fatfs"
-				},
-				{
-					"backtrace" : 5,
+					"backtrace" : 8,
 					"path" : "C:/Users/mmadha/OneDrive - Transformers and Rectifiers Ltd/Desktop/bare_api/msc_file_explorer/file_processing"
 				},
 				{
 					"backtrace" : 2,
-					"path" : "C:/Users/mmadha/OneDrive - Transformers and Rectifiers Ltd/Desktop/bare_api/msc_file_explorer/build/pico-debug/hardware_processing"
+					"path" : "C:/Users/mmadha/.pico-sdk/sdk/2.2.0/src/rp2_common/pico_atomic/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/mmadha/OneDrive - Transformers and Rectifiers Ltd/Desktop/bare_api/msc_file_explorer/fatfs"
 				},
 				{
 					"backtrace" : 2,
 					"path" : "H:/tinyusb/src"
-				},
-				{
-					"backtrace" : 2,
-					"path" : "C:/Users/mmadha/.pico-sdk/sdk/2.2.0/src/rp2_common/pico_atomic/include"
 				},
 				{
 					"backtrace" : 2,
@@ -1002,17 +1042,7 @@
 				{
 					"backtrace" : 2,
 					"isSystem" : true,
-					"path" : "C:/Users/mmadha/.pico-sdk/sdk/2.2.0/src/rp2040/hardware_structs/include"
-				},
-				{
-					"backtrace" : 2,
-					"isSystem" : true,
-					"path" : "C:/Users/mmadha/.pico-sdk/sdk/2.2.0/src/rp2040/hardware_regs/include"
-				},
-				{
-					"backtrace" : 2,
-					"isSystem" : true,
-					"path" : "C:/Users/mmadha/.pico-sdk/sdk/2.2.0/src/rp2_common/hardware_base/include"
+					"path" : "C:/Users/mmadha/.pico-sdk/sdk/2.2.0/src/rp2_common/hardware_spi/include"
 				},
 				{
 					"backtrace" : 2,
@@ -1037,6 +1067,16 @@
 				{
 					"backtrace" : 2,
 					"isSystem" : true,
+					"path" : "C:/Users/mmadha/.pico-sdk/sdk/2.2.0/src/rp2040/hardware_regs/include"
+				},
+				{
+					"backtrace" : 2,
+					"isSystem" : true,
+					"path" : "C:/Users/mmadha/.pico-sdk/sdk/2.2.0/src/rp2_common/hardware_base/include"
+				},
+				{
+					"backtrace" : 2,
+					"isSystem" : true,
 					"path" : "C:/Users/mmadha/.pico-sdk/sdk/2.2.0/src/rp2_common/pico_platform_common/include"
 				},
 				{
@@ -1057,7 +1097,7 @@
 				{
 					"backtrace" : 2,
 					"isSystem" : true,
-					"path" : "C:/Users/mmadha/.pico-sdk/sdk/2.2.0/src/rp2_common/hardware_irq/include"
+					"path" : "C:/Users/mmadha/.pico-sdk/sdk/2.2.0/src/rp2040/hardware_structs/include"
 				},
 				{
 					"backtrace" : 2,
@@ -1077,32 +1117,7 @@
 				{
 					"backtrace" : 2,
 					"isSystem" : true,
-					"path" : "C:/Users/mmadha/.pico-sdk/sdk/2.2.0/src/common/pico_sync/include"
-				},
-				{
-					"backtrace" : 2,
-					"isSystem" : true,
-					"path" : "C:/Users/mmadha/.pico-sdk/sdk/2.2.0/src/common/pico_time/include"
-				},
-				{
-					"backtrace" : 2,
-					"isSystem" : true,
-					"path" : "C:/Users/mmadha/.pico-sdk/sdk/2.2.0/src/rp2_common/hardware_timer/include"
-				},
-				{
-					"backtrace" : 2,
-					"isSystem" : true,
-					"path" : "C:/Users/mmadha/.pico-sdk/sdk/2.2.0/src/common/pico_util/include"
-				},
-				{
-					"backtrace" : 2,
-					"isSystem" : true,
-					"path" : "C:/Users/mmadha/.pico-sdk/sdk/2.2.0/src/rp2_common/pico_time_adapter/include"
-				},
-				{
-					"backtrace" : 2,
-					"isSystem" : true,
-					"path" : "C:/Users/mmadha/.pico-sdk/sdk/2.2.0/src/rp2_common/pico_runtime_init/include"
+					"path" : "C:/Users/mmadha/.pico-sdk/sdk/2.2.0/src/rp2_common/hardware_resets/include"
 				},
 				{
 					"backtrace" : 2,
@@ -1117,7 +1132,7 @@
 				{
 					"backtrace" : 2,
 					"isSystem" : true,
-					"path" : "C:/Users/mmadha/.pico-sdk/sdk/2.2.0/src/rp2_common/hardware_resets/include"
+					"path" : "C:/Users/mmadha/.pico-sdk/sdk/2.2.0/src/rp2_common/hardware_irq/include"
 				},
 				{
 					"backtrace" : 2,
@@ -1167,7 +1182,37 @@
 				{
 					"backtrace" : 2,
 					"isSystem" : true,
+					"path" : "C:/Users/mmadha/.pico-sdk/sdk/2.2.0/src/common/pico_time/include"
+				},
+				{
+					"backtrace" : 2,
+					"isSystem" : true,
+					"path" : "C:/Users/mmadha/.pico-sdk/sdk/2.2.0/src/rp2_common/hardware_timer/include"
+				},
+				{
+					"backtrace" : 2,
+					"isSystem" : true,
+					"path" : "C:/Users/mmadha/.pico-sdk/sdk/2.2.0/src/common/pico_sync/include"
+				},
+				{
+					"backtrace" : 2,
+					"isSystem" : true,
+					"path" : "C:/Users/mmadha/.pico-sdk/sdk/2.2.0/src/common/pico_util/include"
+				},
+				{
+					"backtrace" : 2,
+					"isSystem" : true,
+					"path" : "C:/Users/mmadha/.pico-sdk/sdk/2.2.0/src/rp2_common/pico_time_adapter/include"
+				},
+				{
+					"backtrace" : 2,
+					"isSystem" : true,
 					"path" : "C:/Users/mmadha/.pico-sdk/sdk/2.2.0/src/rp2_common/hardware_xosc/include"
+				},
+				{
+					"backtrace" : 2,
+					"isSystem" : true,
+					"path" : "C:/Users/mmadha/.pico-sdk/sdk/2.2.0/src/rp2_common/pico_runtime_init/include"
 				},
 				{
 					"backtrace" : 2,
@@ -1222,6 +1267,26 @@
 				{
 					"backtrace" : 2,
 					"isSystem" : true,
+					"path" : "C:/Users/mmadha/.pico-sdk/sdk/2.2.0/src/rp2_common/pico_multicore/include"
+				},
+				{
+					"backtrace" : 2,
+					"isSystem" : true,
+					"path" : "C:/Users/mmadha/.pico-sdk/sdk/2.2.0/src/common/boot_picobin_headers/include"
+				},
+				{
+					"backtrace" : 2,
+					"isSystem" : true,
+					"path" : "C:/Users/mmadha/.pico-sdk/sdk/2.2.0/src/rp2_common/hardware_pio/include"
+				},
+				{
+					"backtrace" : 2,
+					"isSystem" : true,
+					"path" : "C:/Users/mmadha/.pico-sdk/sdk/2.2.0/src/rp2_common/hardware_dma/include"
+				},
+				{
+					"backtrace" : 2,
+					"isSystem" : true,
 					"path" : "C:/Users/mmadha/.pico-sdk/sdk/2.2.0/src/rp2_common/pico_unique_id/include"
 				},
 				{
@@ -1233,16 +1298,6 @@
 					"backtrace" : 2,
 					"isSystem" : true,
 					"path" : "C:/Users/mmadha/.pico-sdk/sdk/2.2.0/src/rp2_common/hardware_xip_cache/include"
-				},
-				{
-					"backtrace" : 2,
-					"isSystem" : true,
-					"path" : "C:/Users/mmadha/.pico-sdk/sdk/2.2.0/src/rp2_common/pico_multicore/include"
-				},
-				{
-					"backtrace" : 2,
-					"isSystem" : true,
-					"path" : "C:/Users/mmadha/.pico-sdk/sdk/2.2.0/src/common/boot_picobin_headers/include"
 				},
 				{
 					"backtrace" : 2,
@@ -1278,17 +1333,17 @@
 			"language" : "ASM",
 			"sourceIndexes" : 
 			[
-				13,
-				47,
-				52,
-				53,
-				54,
+				12,
+				51,
+				56,
 				57,
 				58,
-				59,
+				61,
 				62,
-				64,
-				69
+				63,
+				66,
+				68,
+				73
 			]
 		},
 		{
@@ -1564,32 +1619,32 @@
 			"includes" : 
 			[
 				{
-					"backtrace" : 4,
+					"backtrace" : 6,
 					"path" : "C:/Users/mmadha/OneDrive - Transformers and Rectifiers Ltd/Desktop/bare_api/msc_file_explorer/tusb_config"
 				},
 				{
-					"backtrace" : 5,
+					"backtrace" : 7,
+					"path" : "C:/Users/mmadha/OneDrive - Transformers and Rectifiers Ltd/Desktop/bare_api/msc_file_explorer/build/pico-debug/hardware_processing"
+				},
+				{
+					"backtrace" : 8,
 					"path" : "C:/Users/mmadha/OneDrive - Transformers and Rectifiers Ltd/Desktop/bare_api/msc_file_explorer/hardware_processing"
 				},
 				{
-					"backtrace" : 5,
-					"path" : "C:/Users/mmadha/OneDrive - Transformers and Rectifiers Ltd/Desktop/bare_api/msc_file_explorer/fatfs"
-				},
-				{
-					"backtrace" : 5,
+					"backtrace" : 8,
 					"path" : "C:/Users/mmadha/OneDrive - Transformers and Rectifiers Ltd/Desktop/bare_api/msc_file_explorer/file_processing"
 				},
 				{
 					"backtrace" : 2,
-					"path" : "C:/Users/mmadha/OneDrive - Transformers and Rectifiers Ltd/Desktop/bare_api/msc_file_explorer/build/pico-debug/hardware_processing"
+					"path" : "C:/Users/mmadha/.pico-sdk/sdk/2.2.0/src/rp2_common/pico_atomic/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/mmadha/OneDrive - Transformers and Rectifiers Ltd/Desktop/bare_api/msc_file_explorer/fatfs"
 				},
 				{
 					"backtrace" : 2,
 					"path" : "H:/tinyusb/src"
-				},
-				{
-					"backtrace" : 2,
-					"path" : "C:/Users/mmadha/.pico-sdk/sdk/2.2.0/src/rp2_common/pico_atomic/include"
 				},
 				{
 					"backtrace" : 2,
@@ -1606,17 +1661,7 @@
 				{
 					"backtrace" : 2,
 					"isSystem" : true,
-					"path" : "C:/Users/mmadha/.pico-sdk/sdk/2.2.0/src/rp2040/hardware_structs/include"
-				},
-				{
-					"backtrace" : 2,
-					"isSystem" : true,
-					"path" : "C:/Users/mmadha/.pico-sdk/sdk/2.2.0/src/rp2040/hardware_regs/include"
-				},
-				{
-					"backtrace" : 2,
-					"isSystem" : true,
-					"path" : "C:/Users/mmadha/.pico-sdk/sdk/2.2.0/src/rp2_common/hardware_base/include"
+					"path" : "C:/Users/mmadha/.pico-sdk/sdk/2.2.0/src/rp2_common/hardware_spi/include"
 				},
 				{
 					"backtrace" : 2,
@@ -1641,6 +1686,16 @@
 				{
 					"backtrace" : 2,
 					"isSystem" : true,
+					"path" : "C:/Users/mmadha/.pico-sdk/sdk/2.2.0/src/rp2040/hardware_regs/include"
+				},
+				{
+					"backtrace" : 2,
+					"isSystem" : true,
+					"path" : "C:/Users/mmadha/.pico-sdk/sdk/2.2.0/src/rp2_common/hardware_base/include"
+				},
+				{
+					"backtrace" : 2,
+					"isSystem" : true,
 					"path" : "C:/Users/mmadha/.pico-sdk/sdk/2.2.0/src/rp2_common/pico_platform_common/include"
 				},
 				{
@@ -1661,7 +1716,7 @@
 				{
 					"backtrace" : 2,
 					"isSystem" : true,
-					"path" : "C:/Users/mmadha/.pico-sdk/sdk/2.2.0/src/rp2_common/hardware_irq/include"
+					"path" : "C:/Users/mmadha/.pico-sdk/sdk/2.2.0/src/rp2040/hardware_structs/include"
 				},
 				{
 					"backtrace" : 2,
@@ -1681,32 +1736,7 @@
 				{
 					"backtrace" : 2,
 					"isSystem" : true,
-					"path" : "C:/Users/mmadha/.pico-sdk/sdk/2.2.0/src/common/pico_sync/include"
-				},
-				{
-					"backtrace" : 2,
-					"isSystem" : true,
-					"path" : "C:/Users/mmadha/.pico-sdk/sdk/2.2.0/src/common/pico_time/include"
-				},
-				{
-					"backtrace" : 2,
-					"isSystem" : true,
-					"path" : "C:/Users/mmadha/.pico-sdk/sdk/2.2.0/src/rp2_common/hardware_timer/include"
-				},
-				{
-					"backtrace" : 2,
-					"isSystem" : true,
-					"path" : "C:/Users/mmadha/.pico-sdk/sdk/2.2.0/src/common/pico_util/include"
-				},
-				{
-					"backtrace" : 2,
-					"isSystem" : true,
-					"path" : "C:/Users/mmadha/.pico-sdk/sdk/2.2.0/src/rp2_common/pico_time_adapter/include"
-				},
-				{
-					"backtrace" : 2,
-					"isSystem" : true,
-					"path" : "C:/Users/mmadha/.pico-sdk/sdk/2.2.0/src/rp2_common/pico_runtime_init/include"
+					"path" : "C:/Users/mmadha/.pico-sdk/sdk/2.2.0/src/rp2_common/hardware_resets/include"
 				},
 				{
 					"backtrace" : 2,
@@ -1721,7 +1751,7 @@
 				{
 					"backtrace" : 2,
 					"isSystem" : true,
-					"path" : "C:/Users/mmadha/.pico-sdk/sdk/2.2.0/src/rp2_common/hardware_resets/include"
+					"path" : "C:/Users/mmadha/.pico-sdk/sdk/2.2.0/src/rp2_common/hardware_irq/include"
 				},
 				{
 					"backtrace" : 2,
@@ -1771,7 +1801,37 @@
 				{
 					"backtrace" : 2,
 					"isSystem" : true,
+					"path" : "C:/Users/mmadha/.pico-sdk/sdk/2.2.0/src/common/pico_time/include"
+				},
+				{
+					"backtrace" : 2,
+					"isSystem" : true,
+					"path" : "C:/Users/mmadha/.pico-sdk/sdk/2.2.0/src/rp2_common/hardware_timer/include"
+				},
+				{
+					"backtrace" : 2,
+					"isSystem" : true,
+					"path" : "C:/Users/mmadha/.pico-sdk/sdk/2.2.0/src/common/pico_sync/include"
+				},
+				{
+					"backtrace" : 2,
+					"isSystem" : true,
+					"path" : "C:/Users/mmadha/.pico-sdk/sdk/2.2.0/src/common/pico_util/include"
+				},
+				{
+					"backtrace" : 2,
+					"isSystem" : true,
+					"path" : "C:/Users/mmadha/.pico-sdk/sdk/2.2.0/src/rp2_common/pico_time_adapter/include"
+				},
+				{
+					"backtrace" : 2,
+					"isSystem" : true,
 					"path" : "C:/Users/mmadha/.pico-sdk/sdk/2.2.0/src/rp2_common/hardware_xosc/include"
+				},
+				{
+					"backtrace" : 2,
+					"isSystem" : true,
+					"path" : "C:/Users/mmadha/.pico-sdk/sdk/2.2.0/src/rp2_common/pico_runtime_init/include"
 				},
 				{
 					"backtrace" : 2,
@@ -1826,6 +1886,26 @@
 				{
 					"backtrace" : 2,
 					"isSystem" : true,
+					"path" : "C:/Users/mmadha/.pico-sdk/sdk/2.2.0/src/rp2_common/pico_multicore/include"
+				},
+				{
+					"backtrace" : 2,
+					"isSystem" : true,
+					"path" : "C:/Users/mmadha/.pico-sdk/sdk/2.2.0/src/common/boot_picobin_headers/include"
+				},
+				{
+					"backtrace" : 2,
+					"isSystem" : true,
+					"path" : "C:/Users/mmadha/.pico-sdk/sdk/2.2.0/src/rp2_common/hardware_pio/include"
+				},
+				{
+					"backtrace" : 2,
+					"isSystem" : true,
+					"path" : "C:/Users/mmadha/.pico-sdk/sdk/2.2.0/src/rp2_common/hardware_dma/include"
+				},
+				{
+					"backtrace" : 2,
+					"isSystem" : true,
 					"path" : "C:/Users/mmadha/.pico-sdk/sdk/2.2.0/src/rp2_common/pico_unique_id/include"
 				},
 				{
@@ -1837,16 +1917,6 @@
 					"backtrace" : 2,
 					"isSystem" : true,
 					"path" : "C:/Users/mmadha/.pico-sdk/sdk/2.2.0/src/rp2_common/hardware_xip_cache/include"
-				},
-				{
-					"backtrace" : 2,
-					"isSystem" : true,
-					"path" : "C:/Users/mmadha/.pico-sdk/sdk/2.2.0/src/rp2_common/pico_multicore/include"
-				},
-				{
-					"backtrace" : 2,
-					"isSystem" : true,
-					"path" : "C:/Users/mmadha/.pico-sdk/sdk/2.2.0/src/common/boot_picobin_headers/include"
 				},
 				{
 					"backtrace" : 2,
@@ -1890,7 +1960,7 @@
 			},
 			"sourceIndexes" : 
 			[
-				66
+				70
 			]
 		}
 	],
@@ -1902,34 +1972,20 @@
 		},
 		{
 			"backtrace" : 2,
-			"id" : "hardware_processing::@60771dde3713b71e265c"
+			"id" : "fatfs_lib::@b3f6f056de49546e4374"
 		},
 		{
-			"backtrace" : 2,
-			"id" : "fatfs_lib::@b3f6f056de49546e4374"
+			"backtrace" : 4,
+			"id" : "hardware_processing_clocked_input_pio_h::@60771dde3713b71e265c"
 		}
 	],
-	"fileSets" : 
-	[
-		{
-			"baseDirectories" : 
-			[
-				"hardware_processing",
-				"fatfs",
-				"file_processing"
-			],
-			"name" : "HEADERS",
-			"type" : "HEADERS",
-			"visibility" : "PUBLIC"
-		}
-	],
-	"id" : "file_processing::@37c7bcb0d8175d205c87",
-	"name" : "file_processing",
-	"nameOnDisk" : "libfile_processing.a",
+	"id" : "hardware_processing::@60771dde3713b71e265c",
+	"name" : "hardware_processing",
+	"nameOnDisk" : "libhardware_processing.a",
 	"paths" : 
 	{
-		"build" : "file_processing",
-		"source" : "file_processing"
+		"build" : "hardware_processing",
+		"source" : "hardware_processing"
 	},
 	"sourceGroups" : 
 	[
@@ -1949,7 +2005,7 @@
 				9,
 				10,
 				11,
-				12,
+				13,
 				14,
 				15,
 				16,
@@ -1983,48 +2039,43 @@
 				44,
 				45,
 				46,
+				47,
 				48,
 				49,
 				50,
-				51,
+				52,
+				53,
+				54,
 				55,
-				56,
+				59,
 				60,
-				61,
-				63,
+				64,
 				65,
-				66,
 				67,
-				68,
+				69,
 				70,
 				71,
-				72
+				72,
+				74,
+				75,
+				76
 			]
 		},
 		{
 			"name" : "",
 			"sourceIndexes" : 
 			[
-				13,
-				47,
-				52,
-				53,
-				54,
+				12,
+				51,
+				56,
 				57,
 				58,
-				59,
+				61,
 				62,
-				64,
-				69
-			]
-		},
-		{
-			"name" : "Header Files",
-			"sourceIndexes" : 
-			[
-				73,
-				74,
-				75
+				63,
+				66,
+				68,
+				73
 			]
 		}
 	],
@@ -2033,7 +2084,205 @@
 		{
 			"backtrace" : 1,
 			"compileGroupIndex" : 0,
-			"path" : "file_processing/file_processing.c",
+			"path" : "hardware_processing/hardware_processing.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "hardware_processing/queue.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/mmadha/.pico-sdk/sdk/2.2.0/src/rp2_common/hardware_spi/spi.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/mmadha/.pico-sdk/sdk/2.2.0/src/rp2040/pico_platform/platform.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/mmadha/.pico-sdk/sdk/2.2.0/src/rp2_common/pico_platform_common/common.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/mmadha/.pico-sdk/sdk/2.2.0/src/rp2_common/pico_platform_panic/panic.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/mmadha/.pico-sdk/sdk/2.2.0/src/common/hardware_claim/claim.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/mmadha/.pico-sdk/sdk/2.2.0/src/rp2_common/hardware_sync/sync.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/mmadha/.pico-sdk/sdk/2.2.0/src/rp2_common/hardware_sync_spin_lock/sync_spin_lock.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/mmadha/.pico-sdk/sdk/2.2.0/src/rp2_common/hardware_clocks/clocks.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/mmadha/.pico-sdk/sdk/2.2.0/src/rp2_common/hardware_gpio/gpio.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/mmadha/.pico-sdk/sdk/2.2.0/src/rp2_common/hardware_irq/irq.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 1,
+			"path" : "C:/Users/mmadha/.pico-sdk/sdk/2.2.0/src/rp2_common/hardware_irq/irq_handler_chain.S",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/mmadha/.pico-sdk/sdk/2.2.0/src/common/pico_sync/sem.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/mmadha/.pico-sdk/sdk/2.2.0/src/common/pico_sync/lock_core.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/mmadha/.pico-sdk/sdk/2.2.0/src/common/pico_sync/mutex.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/mmadha/.pico-sdk/sdk/2.2.0/src/common/pico_sync/critical_section.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/mmadha/.pico-sdk/sdk/2.2.0/src/common/pico_time/time.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/mmadha/.pico-sdk/sdk/2.2.0/src/common/pico_time/timeout_helper.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/mmadha/.pico-sdk/sdk/2.2.0/src/rp2_common/hardware_timer/timer.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/mmadha/.pico-sdk/sdk/2.2.0/src/common/pico_util/datetime.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/mmadha/.pico-sdk/sdk/2.2.0/src/common/pico_util/pheap.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/mmadha/.pico-sdk/sdk/2.2.0/src/common/pico_util/queue.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/mmadha/.pico-sdk/sdk/2.2.0/src/rp2_common/hardware_pll/pll.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/mmadha/.pico-sdk/sdk/2.2.0/src/rp2_common/hardware_vreg/vreg.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/mmadha/.pico-sdk/sdk/2.2.0/src/rp2_common/hardware_watchdog/watchdog.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/mmadha/.pico-sdk/sdk/2.2.0/src/rp2_common/hardware_ticks/ticks.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/mmadha/.pico-sdk/sdk/2.2.0/src/rp2_common/pico_bootrom/bootrom.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/mmadha/.pico-sdk/sdk/2.2.0/src/rp2_common/pico_bootrom/bootrom_lock.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/mmadha/.pico-sdk/sdk/2.2.0/src/rp2_common/hardware_boot_lock/boot_lock.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/mmadha/.pico-sdk/sdk/2.2.0/src/rp2_common/pico_flash/flash.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/mmadha/.pico-sdk/sdk/2.2.0/src/rp2_common/hardware_xosc/xosc.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/mmadha/.pico-sdk/sdk/2.2.0/src/rp2_common/hardware_pio/pio.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/mmadha/.pico-sdk/sdk/2.2.0/src/rp2_common/hardware_dma/dma.c",
 			"sourceGroupIndex" : 0
 		},
 		{
@@ -2105,114 +2354,6 @@
 		{
 			"backtrace" : 2,
 			"compileGroupIndex" : 0,
-			"path" : "C:/Users/mmadha/.pico-sdk/sdk/2.2.0/src/rp2_common/hardware_irq/irq.c",
-			"sourceGroupIndex" : 0
-		},
-		{
-			"backtrace" : 2,
-			"compileGroupIndex" : 1,
-			"path" : "C:/Users/mmadha/.pico-sdk/sdk/2.2.0/src/rp2_common/hardware_irq/irq_handler_chain.S",
-			"sourceGroupIndex" : 1
-		},
-		{
-			"backtrace" : 2,
-			"compileGroupIndex" : 0,
-			"path" : "C:/Users/mmadha/.pico-sdk/sdk/2.2.0/src/rp2040/pico_platform/platform.c",
-			"sourceGroupIndex" : 0
-		},
-		{
-			"backtrace" : 2,
-			"compileGroupIndex" : 0,
-			"path" : "C:/Users/mmadha/.pico-sdk/sdk/2.2.0/src/rp2_common/pico_platform_common/common.c",
-			"sourceGroupIndex" : 0
-		},
-		{
-			"backtrace" : 2,
-			"compileGroupIndex" : 0,
-			"path" : "C:/Users/mmadha/.pico-sdk/sdk/2.2.0/src/rp2_common/pico_platform_panic/panic.c",
-			"sourceGroupIndex" : 0
-		},
-		{
-			"backtrace" : 2,
-			"compileGroupIndex" : 0,
-			"path" : "C:/Users/mmadha/.pico-sdk/sdk/2.2.0/src/common/hardware_claim/claim.c",
-			"sourceGroupIndex" : 0
-		},
-		{
-			"backtrace" : 2,
-			"compileGroupIndex" : 0,
-			"path" : "C:/Users/mmadha/.pico-sdk/sdk/2.2.0/src/rp2_common/hardware_sync/sync.c",
-			"sourceGroupIndex" : 0
-		},
-		{
-			"backtrace" : 2,
-			"compileGroupIndex" : 0,
-			"path" : "C:/Users/mmadha/.pico-sdk/sdk/2.2.0/src/rp2_common/hardware_sync_spin_lock/sync_spin_lock.c",
-			"sourceGroupIndex" : 0
-		},
-		{
-			"backtrace" : 2,
-			"compileGroupIndex" : 0,
-			"path" : "C:/Users/mmadha/.pico-sdk/sdk/2.2.0/src/common/pico_sync/sem.c",
-			"sourceGroupIndex" : 0
-		},
-		{
-			"backtrace" : 2,
-			"compileGroupIndex" : 0,
-			"path" : "C:/Users/mmadha/.pico-sdk/sdk/2.2.0/src/common/pico_sync/lock_core.c",
-			"sourceGroupIndex" : 0
-		},
-		{
-			"backtrace" : 2,
-			"compileGroupIndex" : 0,
-			"path" : "C:/Users/mmadha/.pico-sdk/sdk/2.2.0/src/common/pico_sync/mutex.c",
-			"sourceGroupIndex" : 0
-		},
-		{
-			"backtrace" : 2,
-			"compileGroupIndex" : 0,
-			"path" : "C:/Users/mmadha/.pico-sdk/sdk/2.2.0/src/common/pico_sync/critical_section.c",
-			"sourceGroupIndex" : 0
-		},
-		{
-			"backtrace" : 2,
-			"compileGroupIndex" : 0,
-			"path" : "C:/Users/mmadha/.pico-sdk/sdk/2.2.0/src/common/pico_time/time.c",
-			"sourceGroupIndex" : 0
-		},
-		{
-			"backtrace" : 2,
-			"compileGroupIndex" : 0,
-			"path" : "C:/Users/mmadha/.pico-sdk/sdk/2.2.0/src/common/pico_time/timeout_helper.c",
-			"sourceGroupIndex" : 0
-		},
-		{
-			"backtrace" : 2,
-			"compileGroupIndex" : 0,
-			"path" : "C:/Users/mmadha/.pico-sdk/sdk/2.2.0/src/rp2_common/hardware_timer/timer.c",
-			"sourceGroupIndex" : 0
-		},
-		{
-			"backtrace" : 2,
-			"compileGroupIndex" : 0,
-			"path" : "C:/Users/mmadha/.pico-sdk/sdk/2.2.0/src/common/pico_util/datetime.c",
-			"sourceGroupIndex" : 0
-		},
-		{
-			"backtrace" : 2,
-			"compileGroupIndex" : 0,
-			"path" : "C:/Users/mmadha/.pico-sdk/sdk/2.2.0/src/common/pico_util/pheap.c",
-			"sourceGroupIndex" : 0
-		},
-		{
-			"backtrace" : 2,
-			"compileGroupIndex" : 0,
-			"path" : "C:/Users/mmadha/.pico-sdk/sdk/2.2.0/src/common/pico_util/queue.c",
-			"sourceGroupIndex" : 0
-		},
-		{
-			"backtrace" : 2,
-			"compileGroupIndex" : 0,
 			"path" : "H:/tinyusb/hw/bsp/rp2040/family.c",
 			"sourceGroupIndex" : 0
 		},
@@ -2231,73 +2372,7 @@
 		{
 			"backtrace" : 2,
 			"compileGroupIndex" : 0,
-			"path" : "C:/Users/mmadha/.pico-sdk/sdk/2.2.0/src/rp2_common/pico_bootrom/bootrom.c",
-			"sourceGroupIndex" : 0
-		},
-		{
-			"backtrace" : 2,
-			"compileGroupIndex" : 0,
-			"path" : "C:/Users/mmadha/.pico-sdk/sdk/2.2.0/src/rp2_common/pico_bootrom/bootrom_lock.c",
-			"sourceGroupIndex" : 0
-		},
-		{
-			"backtrace" : 2,
-			"compileGroupIndex" : 0,
-			"path" : "C:/Users/mmadha/.pico-sdk/sdk/2.2.0/src/rp2_common/hardware_boot_lock/boot_lock.c",
-			"sourceGroupIndex" : 0
-		},
-		{
-			"backtrace" : 2,
-			"compileGroupIndex" : 0,
-			"path" : "C:/Users/mmadha/.pico-sdk/sdk/2.2.0/src/rp2_common/pico_flash/flash.c",
-			"sourceGroupIndex" : 0
-		},
-		{
-			"backtrace" : 2,
-			"compileGroupIndex" : 0,
 			"path" : "C:/Users/mmadha/.pico-sdk/sdk/2.2.0/src/rp2_common/hardware_xip_cache/xip_cache.c",
-			"sourceGroupIndex" : 0
-		},
-		{
-			"backtrace" : 2,
-			"compileGroupIndex" : 0,
-			"path" : "C:/Users/mmadha/.pico-sdk/sdk/2.2.0/src/rp2_common/hardware_clocks/clocks.c",
-			"sourceGroupIndex" : 0
-		},
-		{
-			"backtrace" : 2,
-			"compileGroupIndex" : 0,
-			"path" : "C:/Users/mmadha/.pico-sdk/sdk/2.2.0/src/rp2_common/hardware_gpio/gpio.c",
-			"sourceGroupIndex" : 0
-		},
-		{
-			"backtrace" : 2,
-			"compileGroupIndex" : 0,
-			"path" : "C:/Users/mmadha/.pico-sdk/sdk/2.2.0/src/rp2_common/hardware_pll/pll.c",
-			"sourceGroupIndex" : 0
-		},
-		{
-			"backtrace" : 2,
-			"compileGroupIndex" : 0,
-			"path" : "C:/Users/mmadha/.pico-sdk/sdk/2.2.0/src/rp2_common/hardware_vreg/vreg.c",
-			"sourceGroupIndex" : 0
-		},
-		{
-			"backtrace" : 2,
-			"compileGroupIndex" : 0,
-			"path" : "C:/Users/mmadha/.pico-sdk/sdk/2.2.0/src/rp2_common/hardware_watchdog/watchdog.c",
-			"sourceGroupIndex" : 0
-		},
-		{
-			"backtrace" : 2,
-			"compileGroupIndex" : 0,
-			"path" : "C:/Users/mmadha/.pico-sdk/sdk/2.2.0/src/rp2_common/hardware_ticks/ticks.c",
-			"sourceGroupIndex" : 0
-		},
-		{
-			"backtrace" : 2,
-			"compileGroupIndex" : 0,
-			"path" : "C:/Users/mmadha/.pico-sdk/sdk/2.2.0/src/rp2_common/hardware_xosc/xosc.c",
 			"sourceGroupIndex" : 0
 		},
 		{
@@ -2467,24 +2542,6 @@
 			"compileGroupIndex" : 0,
 			"path" : "C:/Users/mmadha/.pico-sdk/sdk/2.2.0/src/rp2_common/pico_stdio_uart/stdio_uart.c",
 			"sourceGroupIndex" : 0
-		},
-		{
-			"backtrace" : 5,
-			"fileSetIndex" : 0,
-			"path" : "hardware_processing/hardware_processing.h",
-			"sourceGroupIndex" : 2
-		},
-		{
-			"backtrace" : 5,
-			"fileSetIndex" : 0,
-			"path" : "fatfs/ff.h",
-			"sourceGroupIndex" : 2
-		},
-		{
-			"backtrace" : 5,
-			"fileSetIndex" : 0,
-			"path" : "file_processing/file_processing.h",
-			"sourceGroupIndex" : 2
 		}
 	],
 	"type" : "STATIC_LIBRARY"

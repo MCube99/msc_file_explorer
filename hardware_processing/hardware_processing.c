@@ -36,6 +36,7 @@
 #include "pico/time.h"
 #include "hardware/structs/iobank0.h"
 #include "clocked_input.pio.h"
+#include "hardware/dma.h"
 
 #define spi_default                         spi0
 #define PICO_DEFAULT_SPI_SCK_PIN            3   // SPI clock, same as master
@@ -44,6 +45,8 @@
 #define PICO_DEFAULT_SPI_CSN_PIN            4    
 #define DEBUG_PIN                           6
 
+
+#define PIO_SERIAL_CLKDIV                   10.f
 
 //#define PICO_DEFAULT_SPI_SCK_PIN            2   // SPI clock, same as master
 //#define PICO_DEFAULT_SPI_RX_PIN             0   // MOSI from master → receive on slave
@@ -54,53 +57,39 @@
 typedef struct {
     PIO pio;
     uint sm;
+    uint8_t data_bytes[ 256 ]; // Buffer to hold received data, size can be adjusted as needed
+    int dma_chan; // DMA channel for PIO transfers
 } pio_spi_t;
 
 static pio_spi_t pio_spi; 
 
 
-//PRIVATE void myIRQHandler(uint gpio, uint32_t events);
-PRIVATE void myIRQHandler();
+
+
+PRIVATE void dma_handler();
 
 
 PRIVATE void gpio_clear_events(uint gpio, uint32_t events) {
     gpio_acknowledge_irq(gpio,events);
 }
 
-PUBLIC void gpio_set_irq_active(uint gpio, uint32_t events, bool enabled) {
-    io_bank0_irq_ctrl_hw_t *irq_ctrl_base = get_core_num() ? &io_bank0_hw->proc1_irq_ctrl : &io_bank0_hw->proc0_irq_ctrl;
-    io_rw_32 *en_reg = &irq_ctrl_base-> inte[gpio/8];
-    events<<= 4 * (gpio%8);
-    if(enabled)
-    {
-        hw_set_bits(en_reg,events);
-    }
-    else
-    {
-        hw_clear_bits(en_reg, events);
-    }
+
+PRIVATE void dma_handler() {
+    // Clear the DMA interrupt
+
+    dma_hw->ints0 = 1u << pio_spi.dma_chan; // Clear the interrupt for channel 0
+    
+    dma_channel_set_write_addr(pio_spi.dma_chan, pio_spi.data_bytes,true); // Reset the write address for the next transfer
+
+    csn_high = false; // Set the flag to indicate that CSN is low, meaning reading is happening
+
+
 }
 
 
- 
-
- 
-
-  PRIVATE void myIRQHandler() 
- {
-  
-            uint8_t word = (uint8_t)pio_sm_get(pio_spi.pio, pio_spi.sm); // Read data from PIO state machine FIFO
-            enqueue(word); // Add data to queue
-             csn_high = false;    
-  } 
-
-
-PUBLIC void prepare_memory_for_spi_transfer(uint8_t *in_buf) {
+PUBLIC void prepare_memory_for_spi_transfer() {
 
     // Placeholder for any memory preparation needed before SPI transfer
-
-    
-    memset(in_buf, 0 , NUMBER_OF_BYTES); // Initialize input buffer
     queue_init();
 
 }
@@ -120,42 +109,45 @@ PUBLIC void prepare_memory_for_spi_transfer(uint8_t *in_buf) {
         set_queue_empty();
      }
 
-    }
+}
 
 //     gpio_set_irq_active(DEBUG_PIN,
 //                         GPIO_IRQ_EDGE_FALL | GPIO_IRQ_EDGE_RISE,
 //                         true);
  
-PUBLIC void set_gpio_pins() 
+
+
+
+PUBLIC void dma_setup(void)
 {
 
-
-  spi_init(spi0, 1000 * 1000);
-  uint actual_freq_hz = spi_set_baudrate(spi0, clock_get_hz(clk_sys) / 6);
-  gpio_set_irq_enabled_with_callback(PICO_DEFAULT_SPI_CSN_PIN, GPIO_IRQ_EDGE_FALL|GPIO_IRQ_EDGE_RISE, true, &myIRQHandler);
-
-}
-
-
-
-
-
-
-
-
-
-PUBLIC void setupPIO(void)
-{
-    pio_spi.pio = pio0;
-
+     pio_spi.pio = pio0;
     uint offset = pio_add_program(pio_spi.pio, &clocked_input_program);
     pio_spi.sm = pio_claim_unused_sm(pio_spi.pio, true);
-    clocked_input_program_init(pio_spi.pio, pio_spi.sm, offset,PICO_DEFAULT_SPI_RX_PIN);
+    clocked_input_program_init(pio_spi.pio, pio_spi.sm, offset,PICO_DEFAULT_SPI_RX_PIN,PIO_SERIAL_CLKDIV );
 
-   //Setup PIO interrupt handling for clocked input
-    pio_set_irq0_source_mask_enabled(pio_spi.pio, pis_sm0_rx_fifo_not_empty|pis_sm1_rx_fifo_not_empty|pis_sm2_rx_fifo_not_empty|pis_sm3_rx_fifo_not_empty, true);
-    irq_set_exclusive_handler(PIO0_IRQ_0, myIRQHandler);
-    irq_set_priority(PIO0_IRQ_0, 0);
-    irq_set_enabled(PIO0_IRQ_0, true);  
+    pio_spi.dma_chan = dma_claim_unused_channel(true);
+    dma_channel_config pio_dma_chan_config = dma_channel_get_default_config(pio_spi.dma_chan);
+    //Tranfers 32-bits at a time
+    channel_config_set_transfer_data_size(&pio_dma_chan_config, DMA_SIZE_32); //sets the size of each DMA transfer to 32 bits
+    channel_config_set_read_increment(&pio_dma_chan_config, false); //Disabled when reading from peripheral, as the source address is fixed
+    channel_config_set_write_increment(&pio_dma_chan_config, false); 
+    channel_config_set_dreq(&pio_dma_chan_config, DREQ_PIO0_RX0); //Configures the DMA channel to be triggered by the PIO's RX FIFO for the specific state machine. This means that a DMA transfer will occur whenever there is data in the RX FIFO of the PIO state machine, allowing for efficient data handling without CPU intervention.
+    dma_channel_configure(
+        pio_spi.dma_chan, 
+        &pio_dma_chan_config,
+         NULL, // Destination address in memory where received data will be stored
+         &pio_spi.pio->rxf[pio_spi.sm],
+         256, 
+         true); //Configure the DMA channel to read from the PIO RX FIFO and write to a destination buffer in memory. The destination address is set to NULL for now, as it will be updated dynamically during transfers. The transfer is started immediately by setting the last argument to true.
 
+
+    dma_channel_set_irq0_enabled(pio_spi.dma_chan, true); //Enable the DMA channel's interrupt, allowing the CPU to be notified when a DMA transfer is complete. This is essential for handling the received data and performing any necessary processing after the transfer.
+
+    //Configure the processor to run dma_handler() when DMA IRQ 0 is asserted
+    irq_set_exclusive_handler(DMA_IRQ_0, dma_handler);
+    irq_set_enabled(DMA_IRQ_0, true); //Enable DMA IRQ 0,
+
+    //Manually call the handler once, to trigger the first DMA transfer and start the data flow from the PIO to memory. This is necessary because the DMA transfer is triggered by the PIO's RX FIFO, and we need to kickstart the process by initiating the first transfer.
+    
 }

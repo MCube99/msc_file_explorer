@@ -17,13 +17,13 @@
 ; edge is observed, so a clock ratio of at least input_clk < clk_sys / 6 is
 ; recommended for good sampling alignment.
 .wrap_target
-    wait 0 pin 1
     wait 1 pin 1
+    wait 0 pin 1
     in pins, 1
  .wrap
 
 % c-sdk {
-static inline void clocked_input_program_init(PIO pio, uint sm, uint offset, uint pin) {
+static inline void clocked_input_program_init(PIO pio, uint sm, uint offset, uint pin, float clk_div) {
     pio_sm_config c = clocked_input_program_get_default_config(offset);
 
     // Set the IN base pin to the provided `pin` parameter. This is the data
@@ -45,6 +45,7 @@ static inline void clocked_input_program_init(PIO pio, uint sm, uint offset, uin
 
     // We only receive, so disable the TX FIFO to make the RX FIFO deeper.
     sm_config_set_fifo_join(&c, PIO_FIFO_JOIN_RX);
+    sm_config_set_clkdiv(&c, clk_div)
 
     // Load our configuration, and start the program from the beginning
     pio_sm_init(pio, sm, offset, &c);
