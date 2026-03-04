@@ -12,22 +12,24 @@
 // clocked_input //
 // ------------- //
 
-#define clocked_input_wrap_target 0
-#define clocked_input_wrap 2
+#define clocked_input_wrap_target 1
+#define clocked_input_wrap 4
 #define clocked_input_pio_version 0
 
 static const uint16_t clocked_input_program_instructions[] = {
+    0x2022, //  0: wait   0 pin, 2
             //     .wrap_target
-    0x20a1, //  0: wait   1 pin, 1
     0x2021, //  1: wait   0 pin, 1
-    0x4001, //  2: in     pins, 1
+    0x20a1, //  2: wait   1 pin, 1
+    0x4001, //  3: in     pins, 1
+    0x00c0, //  4: jmp    pin, 0
             //     .wrap
 };
 
 #if !PICO_NO_HARDWARE
 static const struct pio_program clocked_input_program = {
     .instructions = clocked_input_program_instructions,
-    .length = 3,
+    .length = 5,
     .origin = -1,
     .pio_version = clocked_input_pio_version,
 #if PICO_PIO_VERSION > 0
@@ -41,11 +43,12 @@ static inline pio_sm_config clocked_input_program_get_default_config(uint offset
     return c;
 }
 
-static inline void clocked_input_program_init(PIO pio, uint sm, uint offset, uint pin, float clk_div) {
+static inline void clocked_input_program_init(PIO pio, uint sm, uint offset, uint pin, uint jmp_pin) {
     pio_sm_config c = clocked_input_program_get_default_config(offset);
     // Set the IN base pin to the provided `pin` parameter. This is the data
     // pin, and the next-numbered GPIO is used as the clock pin.
     sm_config_set_in_pins(&c, pin);
+    sm_config_set_jmp_pin(&c, jmp_pin);
     // Set the pin directions to input at the PIO
     pio_sm_set_consecutive_pindirs(pio, sm, pin, 2, false);
     // Connect these GPIOs to this PIO block
@@ -55,12 +58,11 @@ static inline void clocked_input_program_init(PIO pio, uint sm, uint offset, uin
     sm_config_set_in_shift(
         &c,
         false, // Shift-to-right = false (i.e. shift to left)
-       true,  // Autopush enabled
+        true,  // Autopush enabled
         8      // Autopush threshold = 8
     );
     // We only receive, so disable the TX FIFO to make the RX FIFO deeper.
     sm_config_set_fifo_join(&c, PIO_FIFO_JOIN_RX);
-    sm_config_set_clkdiv(&c, clk_div); 
     // Load our configuration, and start the program from the beginning
     pio_sm_init(pio, sm, offset, &c);
     pio_sm_set_enabled(pio, sm, true);

@@ -35,7 +35,7 @@
 			{
 				"command" : 1,
 				"file" : 0,
-				"line" : 22,
+				"line" : 23,
 				"parent" : 0
 			},
 			{
@@ -1902,11 +1902,11 @@
 		},
 		{
 			"backtrace" : 2,
-			"id" : "fatfs_lib::@b3f6f056de49546e4374"
+			"id" : "hardware_processing::@60771dde3713b71e265c"
 		},
 		{
 			"backtrace" : 2,
-			"id" : "hardware_processing::@60771dde3713b71e265c"
+			"id" : "fatfs_lib::@b3f6f056de49546e4374"
 		}
 	],
 	"fileSets" : 
@@ -2024,7 +2024,8 @@
 			[
 				73,
 				74,
-				75
+				75,
+				76
 			]
 		}
 	],
@@ -2484,6 +2485,12 @@
 			"backtrace" : 5,
 			"fileSetIndex" : 0,
 			"path" : "file_processing/file_processing.h",
+			"sourceGroupIndex" : 2
+		},
+		{
+			"backtrace" : 5,
+			"fileSetIndex" : 0,
+			"path" : "hardware_processing/queue.h",
 			"sourceGroupIndex" : 2
 		}
 	],

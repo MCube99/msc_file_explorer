@@ -10,4 +10,4 @@ typedef enum
 }FSUCCESS;
 
 PUBLIC void file_processing_main();
-PUBLIC unsigned int append_char(uint32_t byte);
+PUBLIC void convert_ascii_to_string(uint8_t *buffer);

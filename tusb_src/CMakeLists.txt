@@ -23,10 +23,13 @@ target_sources(host_storage
     FILES
         ${SRC_HEADERS}
         ${PARENT_DIR}/fatfs/ff.h
-        ${PARENT_DIR}/fatfs/diskio.h)
+        ${PARENT_DIR}/fatfs/diskio.h
+         ${CMAKE_CURRENT_SOURCE_DIR}/tusb.h)
+       
 
 
 target_link_libraries(host_storage
     PUBLIC
         file_processing
+        PRIVATE tinyusb_host tinyusb_board 
 )

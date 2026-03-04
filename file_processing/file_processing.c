@@ -11,6 +11,7 @@
 
 
 
+
 typedef struct 
 {
     bool folder_exists:1;
@@ -68,6 +69,9 @@ FRESULT (*handle_error[])(FRESULT fr) = {
 
 Exists_check exists_check = {0};
 
+PRIVATE void get_date(const char *in, char *date);
+
+PRIVATE void extract_date(const char *in_buf, char *out);
 // the function below exists to work on the results and errors
 
 PUBLIC void file_processing_main( ) {
@@ -129,8 +133,14 @@ FRESULT no_path(FRESULT fr)
 {
     FIL fil;
     UINT bw;
+    uint8_t *buffer = give_array_address(); // get the current position in the buffer to use for file name
+    char dates[8];
+    memset(dates,0,sizeof(dates));
+    get_date(buffer, dates);
+   // extract_date(folder_buffer, dates);
 
-    const char *dir  = "MAAZ";
+
+    char *dir  = dates;
     const char *file = "MAAZ/test.txt";
 
     fr = f_mkdir(dir);
@@ -140,6 +150,7 @@ FRESULT no_path(FRESULT fr)
         fr = f_open(&fil, file, FA_WRITE | FA_CREATE_ALWAYS);
         if (fr == FR_OK)
         {
+            
             f_puts(folder_buffer, &fil);
             fr = f_close(&fil);
         }
@@ -312,28 +323,20 @@ static void add_subdirectory() //need to get date time stamp and stuff and use t
 
 
 
- PUBLIC void convert_ascii_to_string(uint8_t *conversion, bool queue_full)
+ PUBLIC void convert_ascii_to_string(uint8_t *buffer)
 {
-    static unsigned int i = 0;
 
-    if (queue_full)
-    {
-        for (i = 0; i < BUF_LEN - 1; i++)
-        {
-            folder_buffer[i] = (char)conversion[i];
-        }
+    
+     int i = 0;
+     
+     for (i = 0; i < BUF_LEN - 1 && *buffer != '\n'; i++)
+      {
+        folder_buffer[i] = (char)buffer[i]; // convert each byte to a char and store it in the folder_buffer
+      }
 
         folder_buffer[ i ] = '\0'; //already i++ so this is after the last one
-        i = 0;   // reset for next message
-    }
-    else
-    {
-        if (i < BUF_LEN - 1)
-        {
-            folder_buffer[i++] = (char)conversion[0];
-            folder_buffer[i]   = '\0';
-        }
-    }
+
+    
 }
 
 
@@ -352,3 +355,62 @@ PUBLIC unsigned int append_char(uint32_t byte)
     }
     return i;   // return current count
 }
+
+
+PUBLIC char* return_buffer()
+{
+    return folder_buffer; // this is just for testing, will need to change when we want to use the buffer
+}
+
+
+// PRIVATE void extract_date(const char *in_buf, char *out)
+// {
+
+    
+//     unsigned d, m, y;
+//     int n = 0;
+
+//     while (*in_buf) {
+//     if (sscanf(out, "%2u/%2u/%2u%n", &d, &m, &y, &n) == 3 &&
+//         n == 8 &&
+//         d <= 31 &&
+//         m <= 12)
+//     {
+//         break;
+//     }
+//     in_buf++;
+// }
+
+//     sscanf(in_buf, "%8s", info);
+
+// }
+
+PRIVATE void get_date(const char *in, char *date)
+{
+    
+    memset(date,0,sizeof(date));
+    const char *date_ptr = in;
+    while(*date_ptr) {
+        if (*date_ptr == '/') 
+        {
+            date[0] = *( date_ptr - 2); // Get the first digit of the day
+            date[1] = *(date_ptr - 1);  // Get the second digit of the day
+            date[2] = *( date_ptr ); // Get the /
+            date[3] = *( date_ptr + 1); // Get the first digit of the month
+            date[4] = *( date_ptr + 2); // Get the second digit of the month
+            date[5]  = *( date_ptr + 3); // Get the second /
+            date[6] = *( date_ptr + 4); // Get the first digit of the year
+            date[7] = *( date_ptr + 5); // Get the second digit of the year
+            date[8] = '\0'; // Null-terminate the string
+            break; // Exit the loop after extracting the date
+
+             // Validate the date format (DD/MM/YY)
+        }
+
+            date_ptr++;
+            // Found the first '/', now look for the second '/'
+    }
+}
+        
+  
+

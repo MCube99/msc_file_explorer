@@ -16,13 +16,16 @@ typedef uint8_t  BYTE;
 typedef uint16_t WORD;
 typedef uint32_t DWORD;
 
-PUBLIC bool spi_irq_setup_init( void );
 
-PUBLIC void set_gpio_pins() ;
+
+
+PUBLIC void set_gpio_pins();
 PUBLIC void gpio_set_irq_active(uint gpio, uint32_t events, bool enabled);
+PUBLIC void pio_dma_setup(void);
 
 PUBLIC void copy_queue_buffer( void );
- PUBLIC void dma_setup(void);
 
 extern volatile bool spi_reading;
 extern volatile bool csn_high;
+
+

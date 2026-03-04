@@ -102,11 +102,9 @@ int main(void) {
 
   board_init();
   queue_init();
-  dma_setup();
-  //set_gpio_pins(); //arent strict;y doing spi so no need to wait for csn
+  set_gpio_pins();
+  pio_dma_setup();
    
-
-  
 
     // this is so that the interrupts don't fire up over here when spi stuff is being set up
 //   prepare_memory_for_spi_transfer();
@@ -147,17 +145,15 @@ int main(void) {
 
     if(!csn_high) // the reading depends when the button is pressed, so when it goes high. This nots it
     {
-       copy_queue_buffer(); // 
+        file_processing_main();
     }
     else  //  
     {
        continue; //if csn is still high, meaning reading is still happening, so continue
     }
 
-    if(queue_is_empty())
-    {
-       file_processing_main();
-    }
+  
+       
     
    
      
