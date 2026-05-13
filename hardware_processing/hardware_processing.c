@@ -14,7 +14,7 @@
 #include "queue.h"
 
 #include "clocked_input.pio.h"
-#include "keyboard_input.pio.h"
+//#include "keyboard_input.pio.h"
 
 // -----------------------------------------------------------------------------
 // STRUCTURES
@@ -28,18 +28,18 @@ typedef struct {
 
 } pio_spi_t;
 
-typedef struct {
+/* typedef struct {
     PIO pio;
     uint sm;
 
 } pio_keyboard_t;
-
+ */
 // -----------------------------------------------------------------------------
 // GLOBALS
 // -----------------------------------------------------------------------------
 
 static pio_spi_t pio_spi;
-static pio_keyboard_t pio_keyboard;
+//static pio_keyboard_t pio_keyboard;
 
 static volatile bool spi_irq_disabled = false;
 
@@ -76,6 +76,8 @@ PRIVATE void __not_in_flash_func(my_gpio_isr)(void) {
     // -------------------------------------------------------------------------
 
     if (events & GPIO_IRQ_EDGE_FALL) {
+        pio_sm_clear_fifos(pio_spi.pio, pio_spi.sm);
+        pio_sm_restart(pio_spi.pio, pio_spi.sm);
         dma_start_channel_mask(1u << pio_spi.dma_chan);
         }
     
@@ -121,19 +123,32 @@ PRIVATE void __not_in_flash_func(my_gpio_isr)(void) {
 
 PUBLIC void set_gpio_pins(void)
 {
+    // --- CSN GPIO setup ---
     gpio_init(PICO_DEFAULT_SPI_CSN_PIN);
 
-    gpio_set_dir( PICO_DEFAULT_SPI_CSN_PIN, GPIO_IN);
+    gpio_set_dir(PICO_DEFAULT_SPI_CSN_PIN, GPIO_IN);
 
     gpio_pull_up(PICO_DEFAULT_SPI_CSN_PIN);
 
-    gpio_acknowledge_irq( PICO_DEFAULT_SPI_CSN_PIN, GPIO_IRQ_EDGE_FALL | GPIO_IRQ_EDGE_RISE);
+    // Clear any stale IRQ state before enabling
+    gpio_acknowledge_irq(
+        PICO_DEFAULT_SPI_CSN_PIN,
+        GPIO_IRQ_EDGE_FALL | GPIO_IRQ_EDGE_RISE
+    );
 
-    gpio_set_irq_enabled( PICO_DEFAULT_SPI_CSN_PIN, GPIO_IRQ_EDGE_FALL | GPIO_IRQ_EDGE_RISE, true);
+    // Install ISR handler
+    irq_set_exclusive_handler(IO_IRQ_BANK0, my_gpio_isr);
 
-    irq_set_exclusive_handler( IO_IRQ_BANK0, my_gpio_isr);
+    // Enable GPIO IRQ events for CSN
+    gpio_set_irq_enabled(
+        PICO_DEFAULT_SPI_CSN_PIN,
+        GPIO_IRQ_EDGE_FALL | GPIO_IRQ_EDGE_RISE,
+        true
+    );
 
+    // Enable BANK0 interrupt in NVIC
     irq_set_enabled(IO_IRQ_BANK0, true);
+
 }
 
 // -----------------------------------------------------------------------------
@@ -148,11 +163,21 @@ PUBLIC void pio_dma_setup(void)
 
     pio_spi.sm = pio_claim_unused_sm( pio_spi.pio, true);
 
+    pio_gpio_init(return_spi_pio(), PICO_DEFAULT_SPI_RX_PIN);
+
+    pio_gpio_init(return_spi_pio(), PICO_DEFAULT_SPI_SCK_PIN);
+
+    pio_gpio_init(return_spi_pio(), PICO_DEFAULT_SPI_TX_PIN);
+
+    // Prime TX FIFO if needed
+    pio_sm_put(return_spi_pio(), return_spi_sm(), 0xFE);
+
     clocked_input_program_init(
         pio_spi.pio,
         pio_spi.sm,
         offset,
         PICO_DEFAULT_SPI_RX_PIN);
+
 
     pio_spi.dma_chan = dma_claim_unused_channel(true);
     pio_spi.dma_cfg = dma_channel_get_default_config(pio_spi.dma_chan);
@@ -161,7 +186,7 @@ PUBLIC void pio_dma_setup(void)
     channel_config_set_write_increment( &pio_spi.dma_cfg, true);
     channel_config_set_dreq(
         &pio_spi.dma_cfg,
-        pio_get_dreq(
+        pio_get_dreq( //this means the dma only reads when rx fifo is full, which 
             pio_spi.pio,
             pio_spi.sm,
             false
@@ -181,7 +206,7 @@ PUBLIC void pio_dma_setup(void)
 // KEYBOARD PIO
 // -----------------------------------------------------------------------------
 
-PUBLIC void pio_keyboard_setup(void)
+/* PUBLIC void pio_keyboard_setup(void)
 {
     pio_keyboard.pio = pio0;
 
@@ -203,12 +228,12 @@ PUBLIC void pio_keyboard_setup(void)
         PICO_DEFAULT_SPI_SCK_PIN
     );
 }
-
+ */
 // -----------------------------------------------------------------------------
 // ACCESSORS
 // -----------------------------------------------------------------------------
 
-PUBLIC PIO return_keyboard_pio(void)
+/* PUBLIC PIO return_keyboard_pio(void)
 {
     return pio_keyboard.pio;
 }
@@ -216,7 +241,7 @@ PUBLIC PIO return_keyboard_pio(void)
 PUBLIC uint return_keyboard_sm(void)
 {
     return pio_keyboard.sm;
-}
+} */
 
 PUBLIC PIO return_spi_pio(void)
 {

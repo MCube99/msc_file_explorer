@@ -113,8 +113,9 @@ int main(void)
   board_init_after_tusb();
   queue_init();
   pio_dma_setup();
-  pio_keyboard_setup();
   set_gpio_pins();
+//  pio_keyboard_setup();
+
 
   msc_app_init();
 
@@ -286,9 +287,8 @@ static void process_kbd_report(hid_keyboard_report_t const *report)
     if (keyboard_check) {
       
       // Avoid blocking TinyUSB callback context
-      if (!pio_sm_is_tx_fifo_full( return_keyboard_pio(), return_keyboard_sm())) {
-        pio_sm_put( return_keyboard_pio(), return_keyboard_sm(), ch); }
-        pio_interrupt_clear( return_keyboard_pio(), 2);
+      if (!pio_sm_is_tx_fifo_full(return_spi_pio(), return_spi_sm())) {
+        pio_sm_put( return_spi_pio(), return_spi_sm(), ch); }
     }
 }
 
