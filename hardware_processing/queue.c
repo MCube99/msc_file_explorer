@@ -2,18 +2,22 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <string.h>
-
+#define UART_ID uart0
+#define BAUD_RATE 115200
+#define UART_TX_PIN 1
+#define UART_RX_PIN 0
 #include "queue.h"
 
 #include "hardware/dma.h"
 
 #include "hardware_processing.h"
+#include "hardware/uart.h"
+#include "hardware/sync.h"
 
 // -----------------------------------------------------------------------------
-// CONSTANTS
+// EXTERN VARIABLE STORAGE
 // -----------------------------------------------------------------------------
-
-#define GARY_CODE 0xFE
+ volatile packet_type_t current_packet = PACKET_START;
 
 // -----------------------------------------------------------------------------
 // QUEUE STORAGE
@@ -54,28 +58,45 @@ PUBLIC int get_queue_size(void) {
 // -----------------------------------------------------------------------------
 
 PUBLIC packet_type_t classify_packet(void) {
+    uint32_t size;
+    uint32_t status = save_and_disable_interrupts();
+    size = pio_sm_get(return_spi_pio(), return_spi_sm());
+    restore_interrupts(status);
+    set_size(size);
+
+//     if (current_packet == PACKET_NONE) {
+      //size = pio_sm_get(return_spi_pio(), return_spi_sm());
+      //set_size(size);
+      //}
+ // i//  uint8_t size = size >> 24;
+    
     uintptr_t base = (uintptr_t)&myQueue.buffer[0];
 
     uintptr_t write = dma_hw->ch[return_channel()].write_addr;
 
     uint32_t difference = write - base;
 
-   static uint8_t count=0;
-   static uint8_t i = 0; //should never go beyind 2
+    if(difference == size/2 && difference > 0){
+        usb_check = true;
+        current_packet = PACKET_START;
+    }
 
-    if(myQueue.buffer[i] == 0 || myQueue.buffer[i] ==1)
-    {
-        ++count;
-        ++i;
-    } 
-        
-    uint8_t first_usb = myQueue.buffer[i];
+//   static uint8_t i = 0; //should never go beyind 2
+
+ //  if(myQueue.buffer[i] == 0 || myQueue.buffer[i] ==1)
+  //  {
+//        ++i;
+//    } 
+//        
+//    uint8_t first_usb = myQueue.buffer[i];
 
     // -------------------------------------------------------------------------
     // VALID SPI PACKET
     // -------------------------------------------------------------------------
 
-    if (difference == first_usb+count+1)  {
+    if ((size != GARY_CODE && size > 1)) {
+        pio_sm_put(return_spi_pio(), return_spi_sm(), 1); 
+        current_packet = PACKET_USB;
         return PACKET_USB;
     }
 
@@ -83,8 +104,15 @@ PUBLIC packet_type_t classify_packet(void) {
     // KEYBOARD PACKET
     // -------------------------------------------------------------------------
 
-    if (myQueue.buffer[1] == GARY_CODE||(myQueue.buffer[0] == GARY_CODE)) {
+    if (size == GARY_CODE || size == 0) {
+        pio_sm_put(return_spi_pio(), return_spi_sm(), 0);
+        current_packet = PACKET_KEYBOARD;
         return PACKET_KEYBOARD;
+    }
+
+    else {
+      current_packet = PACKET_NONE;
+      return PACKET_NONE;
     }
 
     // -------------------------------------------------------------------------

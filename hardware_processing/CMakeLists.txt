@@ -16,9 +16,8 @@ target_include_directories(hardware_processing
 target_link_libraries(hardware_processing
     PRIVATE hardware_spi hardware_sync
     PUBLIC hardware_pio hardware_irq hardware_gpio hardware_dma fatfs_lib
+    PUBLIC hardware_uart
 )
  
 
-# add_library(string_processing spi_processing.c hardware_processing.h)
-# target_link_directories(string_processing PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
-# target_link_libraries(string_processing PUBLIC )
+pico_enable_stdio_uart(hardware_processing 1)
