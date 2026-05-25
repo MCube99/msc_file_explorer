@@ -10,8 +10,8 @@
 // -----------------------------------------------------------------------------
 
 typedef enum {
-    PACKET_START,
     PACKET_NONE,
+    PACKET_START,
     PACKET_USB,
     PACKET_KEYBOARD
 

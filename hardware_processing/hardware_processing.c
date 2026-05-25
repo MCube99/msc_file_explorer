@@ -65,16 +65,14 @@ PRIVATE void __not_in_flash_func(my_gpio_isr)(void) {
 
     // -------------------------------------------------------------------------
     // CSn LOW -> START DMA AND CHECK STAGES 
-    // -------------------------------------------------------------------------
 
     if (events & GPIO_IRQ_EDGE_FALL) {
 
-        if(current_packet == PACKET_START) {
-           pio_interrupt_clear(return_spi_pio(), 0); 
+        if(current_packet == PACKET_NONE) {
+            current_packet = PACKET_START;
         }
 
         if(current_packet == PACKET_USB) {
-            pio_interrupt_clear(return_spi_pio(), 1);
             dma_start_channel_mask(1u << return_channel()); 
         }
 
@@ -83,28 +81,6 @@ PRIVATE void __not_in_flash_func(my_gpio_isr)(void) {
         }
     }
 
-    // -------------------------------------------------------------------------
-    // CSn HIGH -> PROCESS PACKET
-    // -------------------------------------------------------------------------
-
-    if (events & GPIO_IRQ_EDGE_RISE) {
-        packet_type_t type = classify_packet(); // big function 
-        
-        switch (type) {
-        case PACKET_USB:
-            keyboard_check = false;
-            break;
-
-        case PACKET_KEYBOARD:
-            usb_check = false;
-            keyboard_check = true;
-            break;
-
-        case PACKET_NONE:
-        default:
-            break;
-        }
-    }
 }
 
 
@@ -127,15 +103,14 @@ PUBLIC void set_gpio_pins(void)
 
     // Clear any pending interrupts FIRST
     gpio_acknowledge_irq(PICO_DEFAULT_SPI_CSN_PIN,
-        GPIO_IRQ_EDGE_FALL | GPIO_IRQ_EDGE_RISE);
+        GPIO_IRQ_EDGE_FALL );
 
     // Set ISR
     irq_set_exclusive_handler(IO_IRQ_BANK0, my_gpio_isr);
 
     // Enable GPIO interrupt on CSN
     gpio_set_irq_enabled(PICO_DEFAULT_SPI_CSN_PIN,
-        GPIO_IRQ_EDGE_FALL | GPIO_IRQ_EDGE_RISE,
-        true);
+        GPIO_IRQ_EDGE_FALL, true);
 
     // Enable IRQ bank
     irq_set_enabled(IO_IRQ_BANK0, true);

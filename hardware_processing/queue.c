@@ -17,7 +17,7 @@
 // -----------------------------------------------------------------------------
 // EXTERN VARIABLE STORAGE
 // -----------------------------------------------------------------------------
- volatile packet_type_t current_packet = PACKET_START;
+ volatile packet_type_t current_packet = PACKET_NONE;
 
 // -----------------------------------------------------------------------------
 // QUEUE STORAGE

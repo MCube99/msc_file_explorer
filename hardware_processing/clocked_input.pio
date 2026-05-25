@@ -6,12 +6,7 @@
     
 constant_sets:
     set x, 8
-    irq set 0
-    irq set 1
-    irq set 2
 
-initial_setup:
-    wait 0 irq 0
 
 get_size_byte:
     wait 0 pin 1
@@ -27,7 +22,6 @@ determine_usb_or_keyboard:
     jmp !y keyboard_setup
 
 usb_processing:
-    wait 0 irq 1
     
     wait 0 pin 1           ; a do while loop of sorts, it keeps 
     wait 1 pin 1
@@ -38,7 +32,6 @@ usb_processing:
 
 .wrap_target
 keyboard_setup:
-    wait 0 irq 2
     pull block
     mov x, osr              ; should be 0x0F because I am putting 0x0F in here via sm_put
     jmp !x initial_setup ; if not 0x0F, then
