@@ -150,7 +150,7 @@ PRIVATE FRESULT ok(FRESULT fr) {// This is the function to check what needs to b
     if(exists_check.file_exists && exists_check.path_exists)
     {
         fr = FR_ALL_DONE;
-        usb_check = false; 
+        usb_transfer_done = false; // reset flag for next transaction
         return(fr);
 
     }

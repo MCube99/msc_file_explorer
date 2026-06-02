@@ -12,7 +12,7 @@
 
 #define BUF_LEN                               256
 #define NUMBER_OF_BYTES                       BUF_LEN 
-
+#define GARY_CODE                   254
 
 
 #define PICO_DEFAULT_START          2
@@ -20,11 +20,9 @@
 #define PICO_DEFAULT_SPI_SCK_PIN  ((PICO_DEFAULT_SPI_RX_PIN) + 1)   //3            // GPIO pin for SPI clock, same as master
 #define PICO_DEFAULT_SPI_CSN_PIN   ((PICO_DEFAULT_SPI_RX_PIN) + 2)   //4             // GPIO pin for SPI chip select
 #define PICO_DEFAULT_SPI_TX_PIN  ((PICO_DEFAULT_SPI_RX_PIN) + 3)   //5             // GPIO pin for SPI data to master → send from slave
-#define GARY_CODE                   254
-#define KEYBOARD_ESCAPE             0x0F
+#define PICO_DEFAULT_KEYBOARD_PIN  ((PICO_DEFAULT_SPI_RX_PIN) + 4)   //6             // GPIO pin for SPI data to master → send from slave
 
-//////////////////////////// DEFINED GPIO FOR PIO STATE MACHINES ////////////////////////////
-#define PICO_DEFAULT_SYNC_PIN     ((PICO_DEFAULT_SPI_RX_PIN) + 4)   //6             
+
 
 typedef uint8_t  BYTE;
 typedef uint16_t WORD;
@@ -43,6 +41,7 @@ PUBLIC uint return_spi_sm();
 PUBLIC int return_channel();
 PUBLIC int return_first_byte_channel(void);
 PUBLIC uint32_t return_size();
+PUBLIC uint return_pio_offset(void); 
 
 
 PUBLIC void set_gpio_pins();

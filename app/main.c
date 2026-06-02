@@ -128,29 +128,24 @@ int main(void)
 
     tuh_task();
     msc_app_task();
-
     led_blinking_task();
 
     if(size_byte_set) {
         classify_packet(); 
     }
 
-
     if (usb_check) // This means that the SPI transaction is complete and the data in the buffer is from the SPI, so we can start processing the SPI data and writing it to the USB. This is necessary because we need to wait until the SPI transaction is complete before we can start processing the SPI data, which could lead to data corruption or other issues if we start processing it too early.
     {
         check_usb_transfer();
-        usb_check = false; // reset flag for next transaction
+        usb_check = false; 
     }
 
    if( usb_transfer_done) // This means that the SPI transaction is complete and the data in the buffer is from the SPI, so we can start processing the SPI data and writing it to the USB. This is necessary because we need to wait until the SPI transaction is complete before we can start processing the SPI data, which could lead to data corruption or other issues if we start processing it too early.
     {
       file_processing_main();
-      usb_transfer_done = false; // reset flag for next transaction
     }
     
   }
-
-  sleep_ms(1); 
 
   return 0;
 }
@@ -285,12 +280,12 @@ static void process_kbd_report(hid_keyboard_report_t const *report)
         // STOP condition (highest priority)
         if (ch == ESC || ch == ENTER || ch == '\r' || ch == '\n')
         {
-           pio_sm_put_blocking( return_spi_pio(), return_spi_sm(), 0); //puts the first byte of the packet into the PIO state machine for processing
+            pio_sm_put( return_spi_pio(), return_spi_sm(), 0); //puts the first byte of the packet into the PIO state machine for processing
            keyboard_check = false;
            break;
         }
 
-        ch = reverse_bits(ch);  
+//        ch = reverse_bits(ch);  
         // if (keyboard_reading && (ch >= 32 && ch <= 126)) for future
 
         // Only forward if active
@@ -298,11 +293,8 @@ static void process_kbd_report(hid_keyboard_report_t const *report)
         //  if ((flag_info & KEYBOARD_SEND_EVENT) && (ch >= 32 && ch <= 126))
         
     if (keyboard_check) {
-          //spi_slave_writing();
-        
         // Avoid blocking TinyUSB callback context
-        if (!pio_sm_is_tx_fifo_full( return_spi_pio(), return_spi_sm())) {
-          pio_sm_put_blocking( return_spi_pio(), return_spi_sm(), ch); }
+          pio_sm_put( return_spi_pio(), return_spi_sm(), ch); 
       }
   }
 

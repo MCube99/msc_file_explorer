@@ -55,24 +55,31 @@ PUBLIC int get_queue_size(void) {
 
 PUBLIC void classify_packet(void) {
 
-    if ((return_size() != GARY_CODE )) {
-        pio_sm_put(return_spi_pio(), return_spi_sm(), return_size()); 
-        uint32_t status = save_and_disable_interrupts();
-        current_packet = PACKET_USB;
-        restore_interrupts(status);
+    uint32_t size = return_size();
+    if(size == 127) {
+        size = 254; // this is because the PIO state machine returns 127 when the actual size is 0, so we need to correct for that. This is a quirk of the PIO state machine and how it handles the size byte, which is why we need to check for this specific value and set it to 0 if we see it.
     }
 
-    if (return_size()== GARY_CODE ) {
-        pio_sm_put(return_spi_pio(), return_spi_sm(), 0);
-        current_packet = PACKET_KEYBOARD;
+    switch( size ) {
+        case 0:
+        case GARY_CODE:
+            current_packet = PACKET_KEYBOARD;
+            gpio_put(PICO_DEFAULT_KEYBOARD_PIN, 1); // Set the pin high to signal that we are processing a keyboard packet
+            keyboard_check = false;
+            break;
+
+        default: // this is for the USB packet, which is the only other option
+            gpio_put(PICO_DEFAULT_KEYBOARD_PIN, 0); // Set the pin high to signal that we are processing a usb packet
+            current_packet = PACKET_USB;
+            usb_check = true;
+            pio_sm_put(return_spi_pio(), return_spi_sm(), return_size()); //puts the first byte of the packet into the PIO state machine for processing
+            dma_start_channel_mask(1u << return_channel()); 
     }
 
-    else {
-      current_packet = PACKET_NONE;
-    }
-    size_byte_set = false; // reset flag for next packet
 
+    size_byte_set = false; // reset the flag for the next packet
 }
+
 
 PUBLIC void check_usb_transfer() {
 
